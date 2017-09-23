@@ -411,19 +411,39 @@
     console.error("LiveReactload ::", msg);
   }
 })({
+  "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/charenc/charenc.js": [
+    "var charenc = {\n  // UTF-8 encoding\n  utf8: {\n    // Convert a string to a byte array\n    stringToBytes: function(str) {\n      return charenc.bin.stringToBytes(unescape(encodeURIComponent(str)));\n    },\n\n    // Convert a byte array to a string\n    bytesToString: function(bytes) {\n      return decodeURIComponent(escape(charenc.bin.bytesToString(bytes)));\n    }\n  },\n\n  // Binary encoding\n  bin: {\n    // Convert a string to a byte array\n    stringToBytes: function(str) {\n      for (var bytes = [], i = 0; i < str.length; i++)\n        bytes.push(str.charCodeAt(i) & 0xFF);\n      return bytes;\n    },\n\n    // Convert a byte array to a string\n    bytesToString: function(bytes) {\n      for (var str = [], i = 0; i < bytes.length; i++)\n        str.push(String.fromCharCode(bytes[i]));\n      return str.join('');\n    }\n  }\n};\n\nmodule.exports = charenc;\n",
+    {},
+    {
+      "id": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/charenc/charenc.js",
+      "hash": "wVEzUQ",
+      "browserifyId": 1,
+      "sourcemap": ""
+    }
+  ],
   "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/create-react-class/factory.js": [
     "(function (process){\n/**\n * Copyright 2013-present, Facebook, Inc.\n * All rights reserved.\n *\n * This source code is licensed under the BSD-style license found in the\n * LICENSE file in the root directory of this source tree. An additional grant\n * of patent rights can be found in the PATENTS file in the same directory.\n *\n */\n\n'use strict';\n\nvar _assign = require('object-assign');\n\nvar emptyObject = require('fbjs/lib/emptyObject');\nvar _invariant = require('fbjs/lib/invariant');\n\nif (process.env.NODE_ENV !== 'production') {\n  var warning = require('fbjs/lib/warning');\n}\n\nvar MIXINS_KEY = 'mixins';\n\n// Helper function to allow the creation of anonymous functions which do not\n// have .name set to the name of the variable being assigned to.\nfunction identity(fn) {\n  return fn;\n}\n\nvar ReactPropTypeLocationNames;\nif (process.env.NODE_ENV !== 'production') {\n  ReactPropTypeLocationNames = {\n    prop: 'prop',\n    context: 'context',\n    childContext: 'child context'\n  };\n} else {\n  ReactPropTypeLocationNames = {};\n}\n\nfunction factory(ReactComponent, isValidElement, ReactNoopUpdateQueue) {\n  /**\n   * Policies that describe methods in `ReactClassInterface`.\n   */\n\n  var injectedMixins = [];\n\n  /**\n   * Composite components are higher-level components that compose other composite\n   * or host components.\n   *\n   * To create a new type of `ReactClass`, pass a specification of\n   * your new class to `React.createClass`. The only requirement of your class\n   * specification is that you implement a `render` method.\n   *\n   *   var MyComponent = React.createClass({\n   *     render: function() {\n   *       return <div>Hello World</div>;\n   *     }\n   *   });\n   *\n   * The class specification supports a specific protocol of methods that have\n   * special meaning (e.g. `render`). See `ReactClassInterface` for\n   * more the comprehensive protocol. Any other properties and methods in the\n   * class specification will be available on the prototype.\n   *\n   * @interface ReactClassInterface\n   * @internal\n   */\n  var ReactClassInterface = {\n    /**\n     * An array of Mixin objects to include when defining your component.\n     *\n     * @type {array}\n     * @optional\n     */\n    mixins: 'DEFINE_MANY',\n\n    /**\n     * An object containing properties and methods that should be defined on\n     * the component's constructor instead of its prototype (static methods).\n     *\n     * @type {object}\n     * @optional\n     */\n    statics: 'DEFINE_MANY',\n\n    /**\n     * Definition of prop types for this component.\n     *\n     * @type {object}\n     * @optional\n     */\n    propTypes: 'DEFINE_MANY',\n\n    /**\n     * Definition of context types for this component.\n     *\n     * @type {object}\n     * @optional\n     */\n    contextTypes: 'DEFINE_MANY',\n\n    /**\n     * Definition of context types this component sets for its children.\n     *\n     * @type {object}\n     * @optional\n     */\n    childContextTypes: 'DEFINE_MANY',\n\n    // ==== Definition methods ====\n\n    /**\n     * Invoked when the component is mounted. Values in the mapping will be set on\n     * `this.props` if that prop is not specified (i.e. using an `in` check).\n     *\n     * This method is invoked before `getInitialState` and therefore cannot rely\n     * on `this.state` or use `this.setState`.\n     *\n     * @return {object}\n     * @optional\n     */\n    getDefaultProps: 'DEFINE_MANY_MERGED',\n\n    /**\n     * Invoked once before the component is mounted. The return value will be used\n     * as the initial value of `this.state`.\n     *\n     *   getInitialState: function() {\n     *     return {\n     *       isOn: false,\n     *       fooBaz: new BazFoo()\n     *     }\n     *   }\n     *\n     * @return {object}\n     * @optional\n     */\n    getInitialState: 'DEFINE_MANY_MERGED',\n\n    /**\n     * @return {object}\n     * @optional\n     */\n    getChildContext: 'DEFINE_MANY_MERGED',\n\n    /**\n     * Uses props from `this.props` and state from `this.state` to render the\n     * structure of the component.\n     *\n     * No guarantees are made about when or how often this method is invoked, so\n     * it must not have side effects.\n     *\n     *   render: function() {\n     *     var name = this.props.name;\n     *     return <div>Hello, {name}!</div>;\n     *   }\n     *\n     * @return {ReactComponent}\n     * @required\n     */\n    render: 'DEFINE_ONCE',\n\n    // ==== Delegate methods ====\n\n    /**\n     * Invoked when the component is initially created and about to be mounted.\n     * This may have side effects, but any external subscriptions or data created\n     * by this method must be cleaned up in `componentWillUnmount`.\n     *\n     * @optional\n     */\n    componentWillMount: 'DEFINE_MANY',\n\n    /**\n     * Invoked when the component has been mounted and has a DOM representation.\n     * However, there is no guarantee that the DOM node is in the document.\n     *\n     * Use this as an opportunity to operate on the DOM when the component has\n     * been mounted (initialized and rendered) for the first time.\n     *\n     * @param {DOMElement} rootNode DOM element representing the component.\n     * @optional\n     */\n    componentDidMount: 'DEFINE_MANY',\n\n    /**\n     * Invoked before the component receives new props.\n     *\n     * Use this as an opportunity to react to a prop transition by updating the\n     * state using `this.setState`. Current props are accessed via `this.props`.\n     *\n     *   componentWillReceiveProps: function(nextProps, nextContext) {\n     *     this.setState({\n     *       likesIncreasing: nextProps.likeCount > this.props.likeCount\n     *     });\n     *   }\n     *\n     * NOTE: There is no equivalent `componentWillReceiveState`. An incoming prop\n     * transition may cause a state change, but the opposite is not true. If you\n     * need it, you are probably looking for `componentWillUpdate`.\n     *\n     * @param {object} nextProps\n     * @optional\n     */\n    componentWillReceiveProps: 'DEFINE_MANY',\n\n    /**\n     * Invoked while deciding if the component should be updated as a result of\n     * receiving new props, state and/or context.\n     *\n     * Use this as an opportunity to `return false` when you're certain that the\n     * transition to the new props/state/context will not require a component\n     * update.\n     *\n     *   shouldComponentUpdate: function(nextProps, nextState, nextContext) {\n     *     return !equal(nextProps, this.props) ||\n     *       !equal(nextState, this.state) ||\n     *       !equal(nextContext, this.context);\n     *   }\n     *\n     * @param {object} nextProps\n     * @param {?object} nextState\n     * @param {?object} nextContext\n     * @return {boolean} True if the component should update.\n     * @optional\n     */\n    shouldComponentUpdate: 'DEFINE_ONCE',\n\n    /**\n     * Invoked when the component is about to update due to a transition from\n     * `this.props`, `this.state` and `this.context` to `nextProps`, `nextState`\n     * and `nextContext`.\n     *\n     * Use this as an opportunity to perform preparation before an update occurs.\n     *\n     * NOTE: You **cannot** use `this.setState()` in this method.\n     *\n     * @param {object} nextProps\n     * @param {?object} nextState\n     * @param {?object} nextContext\n     * @param {ReactReconcileTransaction} transaction\n     * @optional\n     */\n    componentWillUpdate: 'DEFINE_MANY',\n\n    /**\n     * Invoked when the component's DOM representation has been updated.\n     *\n     * Use this as an opportunity to operate on the DOM when the component has\n     * been updated.\n     *\n     * @param {object} prevProps\n     * @param {?object} prevState\n     * @param {?object} prevContext\n     * @param {DOMElement} rootNode DOM element representing the component.\n     * @optional\n     */\n    componentDidUpdate: 'DEFINE_MANY',\n\n    /**\n     * Invoked when the component is about to be removed from its parent and have\n     * its DOM representation destroyed.\n     *\n     * Use this as an opportunity to deallocate any external resources.\n     *\n     * NOTE: There is no `componentDidUnmount` since your component will have been\n     * destroyed by that point.\n     *\n     * @optional\n     */\n    componentWillUnmount: 'DEFINE_MANY',\n\n    // ==== Advanced methods ====\n\n    /**\n     * Updates the component's currently mounted DOM representation.\n     *\n     * By default, this implements React's rendering and reconciliation algorithm.\n     * Sophisticated clients may wish to override this.\n     *\n     * @param {ReactReconcileTransaction} transaction\n     * @internal\n     * @overridable\n     */\n    updateComponent: 'OVERRIDE_BASE'\n  };\n\n  /**\n   * Mapping from class specification keys to special processing functions.\n   *\n   * Although these are declared like instance properties in the specification\n   * when defining classes using `React.createClass`, they are actually static\n   * and are accessible on the constructor instead of the prototype. Despite\n   * being static, they must be defined outside of the \"statics\" key under\n   * which all other static methods are defined.\n   */\n  var RESERVED_SPEC_KEYS = {\n    displayName: function(Constructor, displayName) {\n      Constructor.displayName = displayName;\n    },\n    mixins: function(Constructor, mixins) {\n      if (mixins) {\n        for (var i = 0; i < mixins.length; i++) {\n          mixSpecIntoComponent(Constructor, mixins[i]);\n        }\n      }\n    },\n    childContextTypes: function(Constructor, childContextTypes) {\n      if (process.env.NODE_ENV !== 'production') {\n        validateTypeDef(Constructor, childContextTypes, 'childContext');\n      }\n      Constructor.childContextTypes = _assign(\n        {},\n        Constructor.childContextTypes,\n        childContextTypes\n      );\n    },\n    contextTypes: function(Constructor, contextTypes) {\n      if (process.env.NODE_ENV !== 'production') {\n        validateTypeDef(Constructor, contextTypes, 'context');\n      }\n      Constructor.contextTypes = _assign(\n        {},\n        Constructor.contextTypes,\n        contextTypes\n      );\n    },\n    /**\n     * Special case getDefaultProps which should move into statics but requires\n     * automatic merging.\n     */\n    getDefaultProps: function(Constructor, getDefaultProps) {\n      if (Constructor.getDefaultProps) {\n        Constructor.getDefaultProps = createMergedResultFunction(\n          Constructor.getDefaultProps,\n          getDefaultProps\n        );\n      } else {\n        Constructor.getDefaultProps = getDefaultProps;\n      }\n    },\n    propTypes: function(Constructor, propTypes) {\n      if (process.env.NODE_ENV !== 'production') {\n        validateTypeDef(Constructor, propTypes, 'prop');\n      }\n      Constructor.propTypes = _assign({}, Constructor.propTypes, propTypes);\n    },\n    statics: function(Constructor, statics) {\n      mixStaticSpecIntoComponent(Constructor, statics);\n    },\n    autobind: function() {}\n  };\n\n  function validateTypeDef(Constructor, typeDef, location) {\n    for (var propName in typeDef) {\n      if (typeDef.hasOwnProperty(propName)) {\n        // use a warning instead of an _invariant so components\n        // don't show up in prod but only in __DEV__\n        if (process.env.NODE_ENV !== 'production') {\n          warning(\n            typeof typeDef[propName] === 'function',\n            '%s: %s type `%s` is invalid; it must be a function, usually from ' +\n              'React.PropTypes.',\n            Constructor.displayName || 'ReactClass',\n            ReactPropTypeLocationNames[location],\n            propName\n          );\n        }\n      }\n    }\n  }\n\n  function validateMethodOverride(isAlreadyDefined, name) {\n    var specPolicy = ReactClassInterface.hasOwnProperty(name)\n      ? ReactClassInterface[name]\n      : null;\n\n    // Disallow overriding of base class methods unless explicitly allowed.\n    if (ReactClassMixin.hasOwnProperty(name)) {\n      _invariant(\n        specPolicy === 'OVERRIDE_BASE',\n        'ReactClassInterface: You are attempting to override ' +\n          '`%s` from your class specification. Ensure that your method names ' +\n          'do not overlap with React methods.',\n        name\n      );\n    }\n\n    // Disallow defining methods more than once unless explicitly allowed.\n    if (isAlreadyDefined) {\n      _invariant(\n        specPolicy === 'DEFINE_MANY' || specPolicy === 'DEFINE_MANY_MERGED',\n        'ReactClassInterface: You are attempting to define ' +\n          '`%s` on your component more than once. This conflict may be due ' +\n          'to a mixin.',\n        name\n      );\n    }\n  }\n\n  /**\n   * Mixin helper which handles policy validation and reserved\n   * specification keys when building React classes.\n   */\n  function mixSpecIntoComponent(Constructor, spec) {\n    if (!spec) {\n      if (process.env.NODE_ENV !== 'production') {\n        var typeofSpec = typeof spec;\n        var isMixinValid = typeofSpec === 'object' && spec !== null;\n\n        if (process.env.NODE_ENV !== 'production') {\n          warning(\n            isMixinValid,\n            \"%s: You're attempting to include a mixin that is either null \" +\n              'or not an object. Check the mixins included by the component, ' +\n              'as well as any mixins they include themselves. ' +\n              'Expected object but got %s.',\n            Constructor.displayName || 'ReactClass',\n            spec === null ? null : typeofSpec\n          );\n        }\n      }\n\n      return;\n    }\n\n    _invariant(\n      typeof spec !== 'function',\n      \"ReactClass: You're attempting to \" +\n        'use a component class or function as a mixin. Instead, just use a ' +\n        'regular object.'\n    );\n    _invariant(\n      !isValidElement(spec),\n      \"ReactClass: You're attempting to \" +\n        'use a component as a mixin. Instead, just use a regular object.'\n    );\n\n    var proto = Constructor.prototype;\n    var autoBindPairs = proto.__reactAutoBindPairs;\n\n    // By handling mixins before any other properties, we ensure the same\n    // chaining order is applied to methods with DEFINE_MANY policy, whether\n    // mixins are listed before or after these methods in the spec.\n    if (spec.hasOwnProperty(MIXINS_KEY)) {\n      RESERVED_SPEC_KEYS.mixins(Constructor, spec.mixins);\n    }\n\n    for (var name in spec) {\n      if (!spec.hasOwnProperty(name)) {\n        continue;\n      }\n\n      if (name === MIXINS_KEY) {\n        // We have already handled mixins in a special case above.\n        continue;\n      }\n\n      var property = spec[name];\n      var isAlreadyDefined = proto.hasOwnProperty(name);\n      validateMethodOverride(isAlreadyDefined, name);\n\n      if (RESERVED_SPEC_KEYS.hasOwnProperty(name)) {\n        RESERVED_SPEC_KEYS[name](Constructor, property);\n      } else {\n        // Setup methods on prototype:\n        // The following member methods should not be automatically bound:\n        // 1. Expected ReactClass methods (in the \"interface\").\n        // 2. Overridden methods (that were mixed in).\n        var isReactClassMethod = ReactClassInterface.hasOwnProperty(name);\n        var isFunction = typeof property === 'function';\n        var shouldAutoBind =\n          isFunction &&\n          !isReactClassMethod &&\n          !isAlreadyDefined &&\n          spec.autobind !== false;\n\n        if (shouldAutoBind) {\n          autoBindPairs.push(name, property);\n          proto[name] = property;\n        } else {\n          if (isAlreadyDefined) {\n            var specPolicy = ReactClassInterface[name];\n\n            // These cases should already be caught by validateMethodOverride.\n            _invariant(\n              isReactClassMethod &&\n                (specPolicy === 'DEFINE_MANY_MERGED' ||\n                  specPolicy === 'DEFINE_MANY'),\n              'ReactClass: Unexpected spec policy %s for key %s ' +\n                'when mixing in component specs.',\n              specPolicy,\n              name\n            );\n\n            // For methods which are defined more than once, call the existing\n            // methods before calling the new property, merging if appropriate.\n            if (specPolicy === 'DEFINE_MANY_MERGED') {\n              proto[name] = createMergedResultFunction(proto[name], property);\n            } else if (specPolicy === 'DEFINE_MANY') {\n              proto[name] = createChainedFunction(proto[name], property);\n            }\n          } else {\n            proto[name] = property;\n            if (process.env.NODE_ENV !== 'production') {\n              // Add verbose displayName to the function, which helps when looking\n              // at profiling tools.\n              if (typeof property === 'function' && spec.displayName) {\n                proto[name].displayName = spec.displayName + '_' + name;\n              }\n            }\n          }\n        }\n      }\n    }\n  }\n\n  function mixStaticSpecIntoComponent(Constructor, statics) {\n    if (!statics) {\n      return;\n    }\n    for (var name in statics) {\n      var property = statics[name];\n      if (!statics.hasOwnProperty(name)) {\n        continue;\n      }\n\n      var isReserved = name in RESERVED_SPEC_KEYS;\n      _invariant(\n        !isReserved,\n        'ReactClass: You are attempting to define a reserved ' +\n          'property, `%s`, that shouldn\\'t be on the \"statics\" key. Define it ' +\n          'as an instance property instead; it will still be accessible on the ' +\n          'constructor.',\n        name\n      );\n\n      var isInherited = name in Constructor;\n      _invariant(\n        !isInherited,\n        'ReactClass: You are attempting to define ' +\n          '`%s` on your component more than once. This conflict may be ' +\n          'due to a mixin.',\n        name\n      );\n      Constructor[name] = property;\n    }\n  }\n\n  /**\n   * Merge two objects, but throw if both contain the same key.\n   *\n   * @param {object} one The first object, which is mutated.\n   * @param {object} two The second object\n   * @return {object} one after it has been mutated to contain everything in two.\n   */\n  function mergeIntoWithNoDuplicateKeys(one, two) {\n    _invariant(\n      one && two && typeof one === 'object' && typeof two === 'object',\n      'mergeIntoWithNoDuplicateKeys(): Cannot merge non-objects.'\n    );\n\n    for (var key in two) {\n      if (two.hasOwnProperty(key)) {\n        _invariant(\n          one[key] === undefined,\n          'mergeIntoWithNoDuplicateKeys(): ' +\n            'Tried to merge two objects with the same key: `%s`. This conflict ' +\n            'may be due to a mixin; in particular, this may be caused by two ' +\n            'getInitialState() or getDefaultProps() methods returning objects ' +\n            'with clashing keys.',\n          key\n        );\n        one[key] = two[key];\n      }\n    }\n    return one;\n  }\n\n  /**\n   * Creates a function that invokes two functions and merges their return values.\n   *\n   * @param {function} one Function to invoke first.\n   * @param {function} two Function to invoke second.\n   * @return {function} Function that invokes the two argument functions.\n   * @private\n   */\n  function createMergedResultFunction(one, two) {\n    return function mergedResult() {\n      var a = one.apply(this, arguments);\n      var b = two.apply(this, arguments);\n      if (a == null) {\n        return b;\n      } else if (b == null) {\n        return a;\n      }\n      var c = {};\n      mergeIntoWithNoDuplicateKeys(c, a);\n      mergeIntoWithNoDuplicateKeys(c, b);\n      return c;\n    };\n  }\n\n  /**\n   * Creates a function that invokes two functions and ignores their return vales.\n   *\n   * @param {function} one Function to invoke first.\n   * @param {function} two Function to invoke second.\n   * @return {function} Function that invokes the two argument functions.\n   * @private\n   */\n  function createChainedFunction(one, two) {\n    return function chainedFunction() {\n      one.apply(this, arguments);\n      two.apply(this, arguments);\n    };\n  }\n\n  /**\n   * Binds a method to the component.\n   *\n   * @param {object} component Component whose method is going to be bound.\n   * @param {function} method Method to be bound.\n   * @return {function} The bound method.\n   */\n  function bindAutoBindMethod(component, method) {\n    var boundMethod = method.bind(component);\n    if (process.env.NODE_ENV !== 'production') {\n      boundMethod.__reactBoundContext = component;\n      boundMethod.__reactBoundMethod = method;\n      boundMethod.__reactBoundArguments = null;\n      var componentName = component.constructor.displayName;\n      var _bind = boundMethod.bind;\n      boundMethod.bind = function(newThis) {\n        for (\n          var _len = arguments.length,\n            args = Array(_len > 1 ? _len - 1 : 0),\n            _key = 1;\n          _key < _len;\n          _key++\n        ) {\n          args[_key - 1] = arguments[_key];\n        }\n\n        // User is trying to bind() an autobound method; we effectively will\n        // ignore the value of \"this\" that the user is trying to use, so\n        // let's warn.\n        if (newThis !== component && newThis !== null) {\n          if (process.env.NODE_ENV !== 'production') {\n            warning(\n              false,\n              'bind(): React component methods may only be bound to the ' +\n                'component instance. See %s',\n              componentName\n            );\n          }\n        } else if (!args.length) {\n          if (process.env.NODE_ENV !== 'production') {\n            warning(\n              false,\n              'bind(): You are binding a component method to the component. ' +\n                'React does this for you automatically in a high-performance ' +\n                'way, so you can safely remove this call. See %s',\n              componentName\n            );\n          }\n          return boundMethod;\n        }\n        var reboundMethod = _bind.apply(boundMethod, arguments);\n        reboundMethod.__reactBoundContext = component;\n        reboundMethod.__reactBoundMethod = method;\n        reboundMethod.__reactBoundArguments = args;\n        return reboundMethod;\n      };\n    }\n    return boundMethod;\n  }\n\n  /**\n   * Binds all auto-bound methods in a component.\n   *\n   * @param {object} component Component whose method is going to be bound.\n   */\n  function bindAutoBindMethods(component) {\n    var pairs = component.__reactAutoBindPairs;\n    for (var i = 0; i < pairs.length; i += 2) {\n      var autoBindKey = pairs[i];\n      var method = pairs[i + 1];\n      component[autoBindKey] = bindAutoBindMethod(component, method);\n    }\n  }\n\n  var IsMountedPreMixin = {\n    componentDidMount: function() {\n      this.__isMounted = true;\n    }\n  };\n\n  var IsMountedPostMixin = {\n    componentWillUnmount: function() {\n      this.__isMounted = false;\n    }\n  };\n\n  /**\n   * Add more to the ReactClass base class. These are all legacy features and\n   * therefore not already part of the modern ReactComponent.\n   */\n  var ReactClassMixin = {\n    /**\n     * TODO: This will be deprecated because state should always keep a consistent\n     * type signature and the only use case for this, is to avoid that.\n     */\n    replaceState: function(newState, callback) {\n      this.updater.enqueueReplaceState(this, newState, callback);\n    },\n\n    /**\n     * Checks whether or not this composite component is mounted.\n     * @return {boolean} True if mounted, false otherwise.\n     * @protected\n     * @final\n     */\n    isMounted: function() {\n      if (process.env.NODE_ENV !== 'production') {\n        warning(\n          this.__didWarnIsMounted,\n          '%s: isMounted is deprecated. Instead, make sure to clean up ' +\n            'subscriptions and pending requests in componentWillUnmount to ' +\n            'prevent memory leaks.',\n          (this.constructor && this.constructor.displayName) ||\n            this.name ||\n            'Component'\n        );\n        this.__didWarnIsMounted = true;\n      }\n      return !!this.__isMounted;\n    }\n  };\n\n  var ReactClassComponent = function() {};\n  _assign(\n    ReactClassComponent.prototype,\n    ReactComponent.prototype,\n    ReactClassMixin\n  );\n\n  /**\n   * Creates a composite component class given a class specification.\n   * See https://facebook.github.io/react/docs/top-level-api.html#react.createclass\n   *\n   * @param {object} spec Class specification (which must define `render`).\n   * @return {function} Component constructor function.\n   * @public\n   */\n  function createClass(spec) {\n    // To keep our warnings more understandable, we'll use a little hack here to\n    // ensure that Constructor.name !== 'Constructor'. This makes sure we don't\n    // unnecessarily identify a class without displayName as 'Constructor'.\n    var Constructor = identity(function(props, context, updater) {\n      // This constructor gets overridden by mocks. The argument is used\n      // by mocks to assert on what gets mounted.\n\n      if (process.env.NODE_ENV !== 'production') {\n        warning(\n          this instanceof Constructor,\n          'Something is calling a React component directly. Use a factory or ' +\n            'JSX instead. See: https://fb.me/react-legacyfactory'\n        );\n      }\n\n      // Wire up auto-binding\n      if (this.__reactAutoBindPairs.length) {\n        bindAutoBindMethods(this);\n      }\n\n      this.props = props;\n      this.context = context;\n      this.refs = emptyObject;\n      this.updater = updater || ReactNoopUpdateQueue;\n\n      this.state = null;\n\n      // ReactClasses doesn't have constructors. Instead, they use the\n      // getInitialState and componentWillMount methods for initialization.\n\n      var initialState = this.getInitialState ? this.getInitialState() : null;\n      if (process.env.NODE_ENV !== 'production') {\n        // We allow auto-mocks to proceed as if they're returning null.\n        if (\n          initialState === undefined &&\n          this.getInitialState._isMockFunction\n        ) {\n          // This is probably bad practice. Consider warning here and\n          // deprecating this convenience.\n          initialState = null;\n        }\n      }\n      _invariant(\n        typeof initialState === 'object' && !Array.isArray(initialState),\n        '%s.getInitialState(): must return an object or null',\n        Constructor.displayName || 'ReactCompositeComponent'\n      );\n\n      this.state = initialState;\n    });\n    Constructor.prototype = new ReactClassComponent();\n    Constructor.prototype.constructor = Constructor;\n    Constructor.prototype.__reactAutoBindPairs = [];\n\n    injectedMixins.forEach(mixSpecIntoComponent.bind(null, Constructor));\n\n    mixSpecIntoComponent(Constructor, IsMountedPreMixin);\n    mixSpecIntoComponent(Constructor, spec);\n    mixSpecIntoComponent(Constructor, IsMountedPostMixin);\n\n    // Initialize the defaultProps property after all mixins have been merged.\n    if (Constructor.getDefaultProps) {\n      Constructor.defaultProps = Constructor.getDefaultProps();\n    }\n\n    if (process.env.NODE_ENV !== 'production') {\n      // This is a tag to indicate that the use of these method names is ok,\n      // since it's used with createClass. If it's not, then it's likely a\n      // mistake so we'll warn you to use the static property, property\n      // initializer or constructor respectively.\n      if (Constructor.getDefaultProps) {\n        Constructor.getDefaultProps.isReactClassApproved = {};\n      }\n      if (Constructor.prototype.getInitialState) {\n        Constructor.prototype.getInitialState.isReactClassApproved = {};\n      }\n    }\n\n    _invariant(\n      Constructor.prototype.render,\n      'createClass(...): Class specification must implement a `render` method.'\n    );\n\n    if (process.env.NODE_ENV !== 'production') {\n      warning(\n        !Constructor.prototype.componentShouldUpdate,\n        '%s has a method called ' +\n          'componentShouldUpdate(). Did you mean shouldComponentUpdate()? ' +\n          'The name is phrased as a question because the function is ' +\n          'expected to return a value.',\n        spec.displayName || 'A component'\n      );\n      warning(\n        !Constructor.prototype.componentWillRecieveProps,\n        '%s has a method called ' +\n          'componentWillRecieveProps(). Did you mean componentWillReceiveProps()?',\n        spec.displayName || 'A component'\n      );\n    }\n\n    // Reduce time spent doing lookups by setting these on the prototype.\n    for (var methodName in ReactClassInterface) {\n      if (!Constructor.prototype[methodName]) {\n        Constructor.prototype[methodName] = null;\n      }\n    }\n\n    return Constructor;\n  }\n\n  return createClass;\n}\n\nmodule.exports = factory;\n\n}).call(this,require('_process'))",
     {
       "_process": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/process/browser.js",
       "object-assign": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/object-assign/index.js",
       "fbjs/lib/emptyObject": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/fbjs/lib/emptyObject.js",
-      "fbjs/lib/warning": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/fbjs/lib/warning.js",
-      "fbjs/lib/invariant": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/fbjs/lib/invariant.js"
+      "fbjs/lib/invariant": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/fbjs/lib/invariant.js",
+      "fbjs/lib/warning": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/fbjs/lib/warning.js"
     },
     {
       "id": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/create-react-class/factory.js",
       "hash": "Lvw1WQ",
-      "browserifyId": 1,
+      "browserifyId": 2,
+      "sourcemap": ""
+    }
+  ],
+  "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/crypt/crypt.js": [
+    "(function() {\n  var base64map\n      = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/',\n\n  crypt = {\n    // Bit-wise rotation left\n    rotl: function(n, b) {\n      return (n << b) | (n >>> (32 - b));\n    },\n\n    // Bit-wise rotation right\n    rotr: function(n, b) {\n      return (n << (32 - b)) | (n >>> b);\n    },\n\n    // Swap big-endian to little-endian and vice versa\n    endian: function(n) {\n      // If number given, swap endian\n      if (n.constructor == Number) {\n        return crypt.rotl(n, 8) & 0x00FF00FF | crypt.rotl(n, 24) & 0xFF00FF00;\n      }\n\n      // Else, assume array and swap all items\n      for (var i = 0; i < n.length; i++)\n        n[i] = crypt.endian(n[i]);\n      return n;\n    },\n\n    // Generate an array of any length of random bytes\n    randomBytes: function(n) {\n      for (var bytes = []; n > 0; n--)\n        bytes.push(Math.floor(Math.random() * 256));\n      return bytes;\n    },\n\n    // Convert a byte array to big-endian 32-bit words\n    bytesToWords: function(bytes) {\n      for (var words = [], i = 0, b = 0; i < bytes.length; i++, b += 8)\n        words[b >>> 5] |= bytes[i] << (24 - b % 32);\n      return words;\n    },\n\n    // Convert big-endian 32-bit words to a byte array\n    wordsToBytes: function(words) {\n      for (var bytes = [], b = 0; b < words.length * 32; b += 8)\n        bytes.push((words[b >>> 5] >>> (24 - b % 32)) & 0xFF);\n      return bytes;\n    },\n\n    // Convert a byte array to a hex string\n    bytesToHex: function(bytes) {\n      for (var hex = [], i = 0; i < bytes.length; i++) {\n        hex.push((bytes[i] >>> 4).toString(16));\n        hex.push((bytes[i] & 0xF).toString(16));\n      }\n      return hex.join('');\n    },\n\n    // Convert a hex string to a byte array\n    hexToBytes: function(hex) {\n      for (var bytes = [], c = 0; c < hex.length; c += 2)\n        bytes.push(parseInt(hex.substr(c, 2), 16));\n      return bytes;\n    },\n\n    // Convert a byte array to a base-64 string\n    bytesToBase64: function(bytes) {\n      for (var base64 = [], i = 0; i < bytes.length; i += 3) {\n        var triplet = (bytes[i] << 16) | (bytes[i + 1] << 8) | bytes[i + 2];\n        for (var j = 0; j < 4; j++)\n          if (i * 8 + j * 6 <= bytes.length * 8)\n            base64.push(base64map.charAt((triplet >>> 6 * (3 - j)) & 0x3F));\n          else\n            base64.push('=');\n      }\n      return base64.join('');\n    },\n\n    // Convert a base-64 string to a byte array\n    base64ToBytes: function(base64) {\n      // Remove non-base-64 characters\n      base64 = base64.replace(/[^A-Z0-9+\\/]/ig, '');\n\n      for (var bytes = [], i = 0, imod4 = 0; i < base64.length;\n          imod4 = ++i % 4) {\n        if (imod4 == 0) continue;\n        bytes.push(((base64map.indexOf(base64.charAt(i - 1))\n            & (Math.pow(2, -2 * imod4 + 8) - 1)) << (imod4 * 2))\n            | (base64map.indexOf(base64.charAt(i)) >>> (6 - imod4 * 2)));\n      }\n      return bytes;\n    }\n  };\n\n  module.exports = crypt;\n})();\n",
+    {},
+    {
+      "id": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/crypt/crypt.js",
+      "hash": "hayu5Q",
+      "browserifyId": 3,
       "sourcemap": ""
     }
   ],
@@ -436,7 +456,7 @@
     {
       "id": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/fbjs/lib/EventListener.js",
       "hash": "bBx2hg",
-      "browserifyId": 2,
+      "browserifyId": 4,
       "sourcemap": ""
     }
   ],
@@ -446,7 +466,7 @@
     {
       "id": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/fbjs/lib/ExecutionEnvironment.js",
       "hash": "DDq74A",
-      "browserifyId": 3,
+      "browserifyId": 5,
       "sourcemap": ""
     }
   ],
@@ -456,7 +476,7 @@
     {
       "id": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/fbjs/lib/camelize.js",
       "hash": "i83Utg",
-      "browserifyId": 4,
+      "browserifyId": 6,
       "sourcemap": ""
     }
   ],
@@ -468,7 +488,7 @@
     {
       "id": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/fbjs/lib/camelizeStyleName.js",
       "hash": "PX2YgA",
-      "browserifyId": 5,
+      "browserifyId": 7,
       "sourcemap": ""
     }
   ],
@@ -480,7 +500,7 @@
     {
       "id": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/fbjs/lib/containsNode.js",
       "hash": "CKFhqg",
-      "browserifyId": 6,
+      "browserifyId": 8,
       "sourcemap": ""
     }
   ],
@@ -493,7 +513,7 @@
     {
       "id": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/fbjs/lib/createArrayFromMixed.js",
       "hash": "jVterg",
-      "browserifyId": 7,
+      "browserifyId": 9,
       "sourcemap": ""
     }
   ],
@@ -503,13 +523,13 @@
       "_process": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/process/browser.js",
       "./ExecutionEnvironment": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/fbjs/lib/ExecutionEnvironment.js",
       "./invariant": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/fbjs/lib/invariant.js",
-      "./getMarkupWrap": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/fbjs/lib/getMarkupWrap.js",
-      "./createArrayFromMixed": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/fbjs/lib/createArrayFromMixed.js"
+      "./createArrayFromMixed": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/fbjs/lib/createArrayFromMixed.js",
+      "./getMarkupWrap": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/fbjs/lib/getMarkupWrap.js"
     },
     {
       "id": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/fbjs/lib/createNodesFromMarkup.js",
       "hash": "yHYG0Q",
-      "browserifyId": 8,
+      "browserifyId": 10,
       "sourcemap": ""
     }
   ],
@@ -519,7 +539,7 @@
     {
       "id": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/fbjs/lib/emptyFunction.js",
       "hash": "I1GItQ",
-      "browserifyId": 9,
+      "browserifyId": 11,
       "sourcemap": ""
     }
   ],
@@ -531,7 +551,7 @@
     {
       "id": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/fbjs/lib/emptyObject.js",
       "hash": "qWcYlw",
-      "browserifyId": 10,
+      "browserifyId": 12,
       "sourcemap": ""
     }
   ],
@@ -541,7 +561,7 @@
     {
       "id": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/fbjs/lib/focusNode.js",
       "hash": "VQRKUw",
-      "browserifyId": 11,
+      "browserifyId": 13,
       "sourcemap": ""
     }
   ],
@@ -551,7 +571,7 @@
     {
       "id": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/fbjs/lib/getActiveElement.js",
       "hash": "k1bblQ",
-      "browserifyId": 12,
+      "browserifyId": 14,
       "sourcemap": ""
     }
   ],
@@ -565,7 +585,7 @@
     {
       "id": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/fbjs/lib/getMarkupWrap.js",
       "hash": "VbcF+A",
-      "browserifyId": 13,
+      "browserifyId": 15,
       "sourcemap": ""
     }
   ],
@@ -575,7 +595,7 @@
     {
       "id": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/fbjs/lib/getUnboundedScrollPosition.js",
       "hash": "AmdrIg",
-      "browserifyId": 14,
+      "browserifyId": 16,
       "sourcemap": ""
     }
   ],
@@ -585,7 +605,7 @@
     {
       "id": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/fbjs/lib/hyphenate.js",
       "hash": "S/uy8g",
-      "browserifyId": 15,
+      "browserifyId": 17,
       "sourcemap": ""
     }
   ],
@@ -597,7 +617,7 @@
     {
       "id": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/fbjs/lib/hyphenateStyleName.js",
       "hash": "SSrKZQ",
-      "browserifyId": 16,
+      "browserifyId": 18,
       "sourcemap": ""
     }
   ],
@@ -609,7 +629,7 @@
     {
       "id": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/fbjs/lib/invariant.js",
       "hash": "Rx3Xnw",
-      "browserifyId": 17,
+      "browserifyId": 19,
       "sourcemap": ""
     }
   ],
@@ -619,7 +639,7 @@
     {
       "id": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/fbjs/lib/isNode.js",
       "hash": "cEW1Bg",
-      "browserifyId": 18,
+      "browserifyId": 20,
       "sourcemap": ""
     }
   ],
@@ -631,7 +651,7 @@
     {
       "id": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/fbjs/lib/isTextNode.js",
       "hash": "+4n2jg",
-      "browserifyId": 19,
+      "browserifyId": 21,
       "sourcemap": ""
     }
   ],
@@ -641,7 +661,7 @@
     {
       "id": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/fbjs/lib/memoizeStringOnly.js",
       "hash": "+HBwKw",
-      "browserifyId": 20,
+      "browserifyId": 22,
       "sourcemap": ""
     }
   ],
@@ -653,7 +673,7 @@
     {
       "id": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/fbjs/lib/performance.js",
       "hash": "KwD3GA",
-      "browserifyId": 21,
+      "browserifyId": 23,
       "sourcemap": ""
     }
   ],
@@ -665,7 +685,7 @@
     {
       "id": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/fbjs/lib/performanceNow.js",
       "hash": "WbwadQ",
-      "browserifyId": 22,
+      "browserifyId": 24,
       "sourcemap": ""
     }
   ],
@@ -675,7 +695,7 @@
     {
       "id": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/fbjs/lib/shallowEqual.js",
       "hash": "G8GHUw",
-      "browserifyId": 23,
+      "browserifyId": 25,
       "sourcemap": ""
     }
   ],
@@ -688,7 +708,41 @@
     {
       "id": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/fbjs/lib/warning.js",
       "hash": "3/hOEg",
-      "browserifyId": 24,
+      "browserifyId": 26,
+      "sourcemap": ""
+    }
+  ],
+  "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/is-buffer/index.js": [
+    "/*!\n * Determine if an object is a Buffer\n *\n * @author   Feross Aboukhadijeh <feross@feross.org> <http://feross.org>\n * @license  MIT\n */\n\n// The _isBuffer check is for Safari 5-7 support, because it's missing\n// Object.prototype.constructor. Remove this eventually\nmodule.exports = function (obj) {\n  return obj != null && (isBuffer(obj) || isSlowBuffer(obj) || !!obj._isBuffer)\n}\n\nfunction isBuffer (obj) {\n  return !!obj.constructor && typeof obj.constructor.isBuffer === 'function' && obj.constructor.isBuffer(obj)\n}\n\n// For Node v0.10 support. Remove this eventually.\nfunction isSlowBuffer (obj) {\n  return typeof obj.readFloatLE === 'function' && typeof obj.slice === 'function' && isBuffer(obj.slice(0, 0))\n}\n",
+    {},
+    {
+      "id": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/is-buffer/index.js",
+      "hash": "4rykAw",
+      "browserifyId": 27,
+      "sourcemap": ""
+    }
+  ],
+  "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/is-retina/index.js": [
+    "module.exports = function() {\n  var mediaQuery;\n  if (typeof window !== \"undefined\" && window !== null) {\n    mediaQuery = \"(-webkit-min-device-pixel-ratio: 1.25), (min--moz-device-pixel-ratio: 1.25), (-o-min-device-pixel-ratio: 5/4), (min-resolution: 1.25dppx)\";\n    if (window.devicePixelRatio > 1.25) {\n      return true;\n    }\n    if (window.matchMedia && window.matchMedia(mediaQuery).matches) {\n      return true;\n    }\n  }\n  return false;\n};\n",
+    {},
+    {
+      "id": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/is-retina/index.js",
+      "hash": "KTEKSw",
+      "browserifyId": 28,
+      "sourcemap": ""
+    }
+  ],
+  "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/md5/md5.js": [
+    "(function(){\r\n  var crypt = require('crypt'),\r\n      utf8 = require('charenc').utf8,\r\n      isBuffer = require('is-buffer'),\r\n      bin = require('charenc').bin,\r\n\r\n  // The core\r\n  md5 = function (message, options) {\r\n    // Convert to byte array\r\n    if (message.constructor == String)\r\n      if (options && options.encoding === 'binary')\r\n        message = bin.stringToBytes(message);\r\n      else\r\n        message = utf8.stringToBytes(message);\r\n    else if (isBuffer(message))\r\n      message = Array.prototype.slice.call(message, 0);\r\n    else if (!Array.isArray(message))\r\n      message = message.toString();\r\n    // else, assume byte array already\r\n\r\n    var m = crypt.bytesToWords(message),\r\n        l = message.length * 8,\r\n        a =  1732584193,\r\n        b = -271733879,\r\n        c = -1732584194,\r\n        d =  271733878;\r\n\r\n    // Swap endian\r\n    for (var i = 0; i < m.length; i++) {\r\n      m[i] = ((m[i] <<  8) | (m[i] >>> 24)) & 0x00FF00FF |\r\n             ((m[i] << 24) | (m[i] >>>  8)) & 0xFF00FF00;\r\n    }\r\n\r\n    // Padding\r\n    m[l >>> 5] |= 0x80 << (l % 32);\r\n    m[(((l + 64) >>> 9) << 4) + 14] = l;\r\n\r\n    // Method shortcuts\r\n    var FF = md5._ff,\r\n        GG = md5._gg,\r\n        HH = md5._hh,\r\n        II = md5._ii;\r\n\r\n    for (var i = 0; i < m.length; i += 16) {\r\n\r\n      var aa = a,\r\n          bb = b,\r\n          cc = c,\r\n          dd = d;\r\n\r\n      a = FF(a, b, c, d, m[i+ 0],  7, -680876936);\r\n      d = FF(d, a, b, c, m[i+ 1], 12, -389564586);\r\n      c = FF(c, d, a, b, m[i+ 2], 17,  606105819);\r\n      b = FF(b, c, d, a, m[i+ 3], 22, -1044525330);\r\n      a = FF(a, b, c, d, m[i+ 4],  7, -176418897);\r\n      d = FF(d, a, b, c, m[i+ 5], 12,  1200080426);\r\n      c = FF(c, d, a, b, m[i+ 6], 17, -1473231341);\r\n      b = FF(b, c, d, a, m[i+ 7], 22, -45705983);\r\n      a = FF(a, b, c, d, m[i+ 8],  7,  1770035416);\r\n      d = FF(d, a, b, c, m[i+ 9], 12, -1958414417);\r\n      c = FF(c, d, a, b, m[i+10], 17, -42063);\r\n      b = FF(b, c, d, a, m[i+11], 22, -1990404162);\r\n      a = FF(a, b, c, d, m[i+12],  7,  1804603682);\r\n      d = FF(d, a, b, c, m[i+13], 12, -40341101);\r\n      c = FF(c, d, a, b, m[i+14], 17, -1502002290);\r\n      b = FF(b, c, d, a, m[i+15], 22,  1236535329);\r\n\r\n      a = GG(a, b, c, d, m[i+ 1],  5, -165796510);\r\n      d = GG(d, a, b, c, m[i+ 6],  9, -1069501632);\r\n      c = GG(c, d, a, b, m[i+11], 14,  643717713);\r\n      b = GG(b, c, d, a, m[i+ 0], 20, -373897302);\r\n      a = GG(a, b, c, d, m[i+ 5],  5, -701558691);\r\n      d = GG(d, a, b, c, m[i+10],  9,  38016083);\r\n      c = GG(c, d, a, b, m[i+15], 14, -660478335);\r\n      b = GG(b, c, d, a, m[i+ 4], 20, -405537848);\r\n      a = GG(a, b, c, d, m[i+ 9],  5,  568446438);\r\n      d = GG(d, a, b, c, m[i+14],  9, -1019803690);\r\n      c = GG(c, d, a, b, m[i+ 3], 14, -187363961);\r\n      b = GG(b, c, d, a, m[i+ 8], 20,  1163531501);\r\n      a = GG(a, b, c, d, m[i+13],  5, -1444681467);\r\n      d = GG(d, a, b, c, m[i+ 2],  9, -51403784);\r\n      c = GG(c, d, a, b, m[i+ 7], 14,  1735328473);\r\n      b = GG(b, c, d, a, m[i+12], 20, -1926607734);\r\n\r\n      a = HH(a, b, c, d, m[i+ 5],  4, -378558);\r\n      d = HH(d, a, b, c, m[i+ 8], 11, -2022574463);\r\n      c = HH(c, d, a, b, m[i+11], 16,  1839030562);\r\n      b = HH(b, c, d, a, m[i+14], 23, -35309556);\r\n      a = HH(a, b, c, d, m[i+ 1],  4, -1530992060);\r\n      d = HH(d, a, b, c, m[i+ 4], 11,  1272893353);\r\n      c = HH(c, d, a, b, m[i+ 7], 16, -155497632);\r\n      b = HH(b, c, d, a, m[i+10], 23, -1094730640);\r\n      a = HH(a, b, c, d, m[i+13],  4,  681279174);\r\n      d = HH(d, a, b, c, m[i+ 0], 11, -358537222);\r\n      c = HH(c, d, a, b, m[i+ 3], 16, -722521979);\r\n      b = HH(b, c, d, a, m[i+ 6], 23,  76029189);\r\n      a = HH(a, b, c, d, m[i+ 9],  4, -640364487);\r\n      d = HH(d, a, b, c, m[i+12], 11, -421815835);\r\n      c = HH(c, d, a, b, m[i+15], 16,  530742520);\r\n      b = HH(b, c, d, a, m[i+ 2], 23, -995338651);\r\n\r\n      a = II(a, b, c, d, m[i+ 0],  6, -198630844);\r\n      d = II(d, a, b, c, m[i+ 7], 10,  1126891415);\r\n      c = II(c, d, a, b, m[i+14], 15, -1416354905);\r\n      b = II(b, c, d, a, m[i+ 5], 21, -57434055);\r\n      a = II(a, b, c, d, m[i+12],  6,  1700485571);\r\n      d = II(d, a, b, c, m[i+ 3], 10, -1894986606);\r\n      c = II(c, d, a, b, m[i+10], 15, -1051523);\r\n      b = II(b, c, d, a, m[i+ 1], 21, -2054922799);\r\n      a = II(a, b, c, d, m[i+ 8],  6,  1873313359);\r\n      d = II(d, a, b, c, m[i+15], 10, -30611744);\r\n      c = II(c, d, a, b, m[i+ 6], 15, -1560198380);\r\n      b = II(b, c, d, a, m[i+13], 21,  1309151649);\r\n      a = II(a, b, c, d, m[i+ 4],  6, -145523070);\r\n      d = II(d, a, b, c, m[i+11], 10, -1120210379);\r\n      c = II(c, d, a, b, m[i+ 2], 15,  718787259);\r\n      b = II(b, c, d, a, m[i+ 9], 21, -343485551);\r\n\r\n      a = (a + aa) >>> 0;\r\n      b = (b + bb) >>> 0;\r\n      c = (c + cc) >>> 0;\r\n      d = (d + dd) >>> 0;\r\n    }\r\n\r\n    return crypt.endian([a, b, c, d]);\r\n  };\r\n\r\n  // Auxiliary functions\r\n  md5._ff  = function (a, b, c, d, x, s, t) {\r\n    var n = a + (b & c | ~b & d) + (x >>> 0) + t;\r\n    return ((n << s) | (n >>> (32 - s))) + b;\r\n  };\r\n  md5._gg  = function (a, b, c, d, x, s, t) {\r\n    var n = a + (b & d | c & ~d) + (x >>> 0) + t;\r\n    return ((n << s) | (n >>> (32 - s))) + b;\r\n  };\r\n  md5._hh  = function (a, b, c, d, x, s, t) {\r\n    var n = a + (b ^ c ^ d) + (x >>> 0) + t;\r\n    return ((n << s) | (n >>> (32 - s))) + b;\r\n  };\r\n  md5._ii  = function (a, b, c, d, x, s, t) {\r\n    var n = a + (c ^ (b | ~d)) + (x >>> 0) + t;\r\n    return ((n << s) | (n >>> (32 - s))) + b;\r\n  };\r\n\r\n  // Package private blocksize\r\n  md5._blocksize = 16;\r\n  md5._digestsize = 16;\r\n\r\n  module.exports = function (message, options) {\r\n    if (message === undefined || message === null)\r\n      throw new Error('Illegal argument ' + message);\r\n\r\n    var digestbytes = crypt.wordsToBytes(md5(message, options));\r\n    return options && options.asBytes ? digestbytes :\r\n        options && options.asString ? bin.bytesToString(digestbytes) :\r\n        crypt.bytesToHex(digestbytes);\r\n  };\r\n\r\n})();\r\n",
+    {
+      "crypt": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/crypt/crypt.js",
+      "charenc": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/charenc/charenc.js",
+      "is-buffer": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/is-buffer/index.js"
+    },
+    {
+      "id": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/md5/md5.js",
+      "hash": "tKhB3Q",
+      "browserifyId": 29,
       "sourcemap": ""
     }
   ],
@@ -698,7 +752,7 @@
     {
       "id": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/object-assign/index.js",
       "hash": "g548Bg",
-      "browserifyId": 25,
+      "browserifyId": 30,
       "sourcemap": ""
     }
   ],
@@ -708,7 +762,7 @@
     {
       "id": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/process/browser.js",
       "hash": "t8j6/g",
-      "browserifyId": 26,
+      "browserifyId": 31,
       "sourcemap": ""
     }
   ],
@@ -723,7 +777,7 @@
     {
       "id": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/prop-types/checkPropTypes.js",
       "hash": "xkU6JQ",
-      "browserifyId": 27,
+      "browserifyId": 32,
       "sourcemap": ""
     }
   ],
@@ -735,7 +789,21 @@
     {
       "id": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/prop-types/factory.js",
       "hash": "TUjJeA",
-      "browserifyId": 28,
+      "browserifyId": 33,
+      "sourcemap": ""
+    }
+  ],
+  "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/prop-types/factoryWithThrowingShims.js": [
+    "/**\n * Copyright 2013-present, Facebook, Inc.\n * All rights reserved.\n *\n * This source code is licensed under the BSD-style license found in the\n * LICENSE file in the root directory of this source tree. An additional grant\n * of patent rights can be found in the PATENTS file in the same directory.\n */\n\n'use strict';\n\nvar emptyFunction = require('fbjs/lib/emptyFunction');\nvar invariant = require('fbjs/lib/invariant');\nvar ReactPropTypesSecret = require('./lib/ReactPropTypesSecret');\n\nmodule.exports = function() {\n  function shim(props, propName, componentName, location, propFullName, secret) {\n    if (secret === ReactPropTypesSecret) {\n      // It is still safe when called from React.\n      return;\n    }\n    invariant(\n      false,\n      'Calling PropTypes validators directly is not supported by the `prop-types` package. ' +\n      'Use PropTypes.checkPropTypes() to call them. ' +\n      'Read more at http://fb.me/use-check-prop-types'\n    );\n  };\n  shim.isRequired = shim;\n  function getShim() {\n    return shim;\n  };\n  // Important!\n  // Keep this list in sync with production version in `./factoryWithTypeCheckers.js`.\n  var ReactPropTypes = {\n    array: shim,\n    bool: shim,\n    func: shim,\n    number: shim,\n    object: shim,\n    string: shim,\n    symbol: shim,\n\n    any: shim,\n    arrayOf: getShim,\n    element: shim,\n    instanceOf: getShim,\n    node: shim,\n    objectOf: getShim,\n    oneOf: getShim,\n    oneOfType: getShim,\n    shape: getShim\n  };\n\n  ReactPropTypes.checkPropTypes = emptyFunction;\n  ReactPropTypes.PropTypes = ReactPropTypes;\n\n  return ReactPropTypes;\n};\n",
+    {
+      "./lib/ReactPropTypesSecret": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/prop-types/lib/ReactPropTypesSecret.js",
+      "fbjs/lib/emptyFunction": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/fbjs/lib/emptyFunction.js",
+      "fbjs/lib/invariant": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/fbjs/lib/invariant.js"
+    },
+    {
+      "id": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/prop-types/factoryWithThrowingShims.js",
+      "hash": "/p4stQ",
+      "browserifyId": 34,
       "sourcemap": ""
     }
   ],
@@ -744,15 +812,29 @@
     {
       "_process": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/process/browser.js",
       "fbjs/lib/emptyFunction": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/fbjs/lib/emptyFunction.js",
-      "fbjs/lib/warning": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/fbjs/lib/warning.js",
       "fbjs/lib/invariant": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/fbjs/lib/invariant.js",
+      "fbjs/lib/warning": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/fbjs/lib/warning.js",
       "./lib/ReactPropTypesSecret": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/prop-types/lib/ReactPropTypesSecret.js",
       "./checkPropTypes": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/prop-types/checkPropTypes.js"
     },
     {
       "id": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/prop-types/factoryWithTypeCheckers.js",
       "hash": "AWK+vg",
-      "browserifyId": 29,
+      "browserifyId": 35,
+      "sourcemap": ""
+    }
+  ],
+  "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/prop-types/index.js": [
+    "(function (process){\n/**\n * Copyright 2013-present, Facebook, Inc.\n * All rights reserved.\n *\n * This source code is licensed under the BSD-style license found in the\n * LICENSE file in the root directory of this source tree. An additional grant\n * of patent rights can be found in the PATENTS file in the same directory.\n */\n\nif (process.env.NODE_ENV !== 'production') {\n  var REACT_ELEMENT_TYPE = (typeof Symbol === 'function' &&\n    Symbol.for &&\n    Symbol.for('react.element')) ||\n    0xeac7;\n\n  var isValidElement = function(object) {\n    return typeof object === 'object' &&\n      object !== null &&\n      object.$$typeof === REACT_ELEMENT_TYPE;\n  };\n\n  // By explicitly using `prop-types` you are opting into new development behavior.\n  // http://fb.me/prop-types-in-prod\n  var throwOnDirectAccess = true;\n  module.exports = require('./factoryWithTypeCheckers')(isValidElement, throwOnDirectAccess);\n} else {\n  // By explicitly using `prop-types` you are opting into new production behavior.\n  // http://fb.me/prop-types-in-prod\n  module.exports = require('./factoryWithThrowingShims')();\n}\n\n}).call(this,require('_process'))",
+    {
+      "_process": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/process/browser.js",
+      "./factoryWithThrowingShims": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/prop-types/factoryWithThrowingShims.js",
+      "./factoryWithTypeCheckers": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/prop-types/factoryWithTypeCheckers.js"
+    },
+    {
+      "id": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/prop-types/index.js",
+      "hash": "MtTbdA",
+      "browserifyId": 36,
       "sourcemap": ""
     }
   ],
@@ -762,7 +844,20 @@
     {
       "id": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/prop-types/lib/ReactPropTypesSecret.js",
       "hash": "vBQCbw",
-      "browserifyId": 30,
+      "browserifyId": 37,
+      "sourcemap": ""
+    }
+  ],
+  "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/query-string/index.js": [
+    "'use strict';\nvar strictUriEncode = require('strict-uri-encode');\nvar objectAssign = require('object-assign');\n\nfunction encoderForArrayFormat(opts) {\n\tswitch (opts.arrayFormat) {\n\t\tcase 'index':\n\t\t\treturn function (key, value, index) {\n\t\t\t\treturn value === null ? [\n\t\t\t\t\tencode(key, opts),\n\t\t\t\t\t'[',\n\t\t\t\t\tindex,\n\t\t\t\t\t']'\n\t\t\t\t].join('') : [\n\t\t\t\t\tencode(key, opts),\n\t\t\t\t\t'[',\n\t\t\t\t\tencode(index, opts),\n\t\t\t\t\t']=',\n\t\t\t\t\tencode(value, opts)\n\t\t\t\t].join('');\n\t\t\t};\n\n\t\tcase 'bracket':\n\t\t\treturn function (key, value) {\n\t\t\t\treturn value === null ? encode(key, opts) : [\n\t\t\t\t\tencode(key, opts),\n\t\t\t\t\t'[]=',\n\t\t\t\t\tencode(value, opts)\n\t\t\t\t].join('');\n\t\t\t};\n\n\t\tdefault:\n\t\t\treturn function (key, value) {\n\t\t\t\treturn value === null ? encode(key, opts) : [\n\t\t\t\t\tencode(key, opts),\n\t\t\t\t\t'=',\n\t\t\t\t\tencode(value, opts)\n\t\t\t\t].join('');\n\t\t\t};\n\t}\n}\n\nfunction parserForArrayFormat(opts) {\n\tvar result;\n\n\tswitch (opts.arrayFormat) {\n\t\tcase 'index':\n\t\t\treturn function (key, value, accumulator) {\n\t\t\t\tresult = /\\[(\\d*)\\]$/.exec(key);\n\n\t\t\t\tkey = key.replace(/\\[\\d*\\]$/, '');\n\n\t\t\t\tif (!result) {\n\t\t\t\t\taccumulator[key] = value;\n\t\t\t\t\treturn;\n\t\t\t\t}\n\n\t\t\t\tif (accumulator[key] === undefined) {\n\t\t\t\t\taccumulator[key] = {};\n\t\t\t\t}\n\n\t\t\t\taccumulator[key][result[1]] = value;\n\t\t\t};\n\n\t\tcase 'bracket':\n\t\t\treturn function (key, value, accumulator) {\n\t\t\t\tresult = /(\\[\\])$/.exec(key);\n\t\t\t\tkey = key.replace(/\\[\\]$/, '');\n\n\t\t\t\tif (!result) {\n\t\t\t\t\taccumulator[key] = value;\n\t\t\t\t\treturn;\n\t\t\t\t} else if (accumulator[key] === undefined) {\n\t\t\t\t\taccumulator[key] = [value];\n\t\t\t\t\treturn;\n\t\t\t\t}\n\n\t\t\t\taccumulator[key] = [].concat(accumulator[key], value);\n\t\t\t};\n\n\t\tdefault:\n\t\t\treturn function (key, value, accumulator) {\n\t\t\t\tif (accumulator[key] === undefined) {\n\t\t\t\t\taccumulator[key] = value;\n\t\t\t\t\treturn;\n\t\t\t\t}\n\n\t\t\t\taccumulator[key] = [].concat(accumulator[key], value);\n\t\t\t};\n\t}\n}\n\nfunction encode(value, opts) {\n\tif (opts.encode) {\n\t\treturn opts.strict ? strictUriEncode(value) : encodeURIComponent(value);\n\t}\n\n\treturn value;\n}\n\nfunction keysSorter(input) {\n\tif (Array.isArray(input)) {\n\t\treturn input.sort();\n\t} else if (typeof input === 'object') {\n\t\treturn keysSorter(Object.keys(input)).sort(function (a, b) {\n\t\t\treturn Number(a) - Number(b);\n\t\t}).map(function (key) {\n\t\t\treturn input[key];\n\t\t});\n\t}\n\n\treturn input;\n}\n\nexports.extract = function (str) {\n\treturn str.split('?')[1] || '';\n};\n\nexports.parse = function (str, opts) {\n\topts = objectAssign({arrayFormat: 'none'}, opts);\n\n\tvar formatter = parserForArrayFormat(opts);\n\n\t// Create an object with no prototype\n\t// https://github.com/sindresorhus/query-string/issues/47\n\tvar ret = Object.create(null);\n\n\tif (typeof str !== 'string') {\n\t\treturn ret;\n\t}\n\n\tstr = str.trim().replace(/^(\\?|#|&)/, '');\n\n\tif (!str) {\n\t\treturn ret;\n\t}\n\n\tstr.split('&').forEach(function (param) {\n\t\tvar parts = param.replace(/\\+/g, ' ').split('=');\n\t\t// Firefox (pre 40) decodes `%3D` to `=`\n\t\t// https://github.com/sindresorhus/query-string/pull/37\n\t\tvar key = parts.shift();\n\t\tvar val = parts.length > 0 ? parts.join('=') : undefined;\n\n\t\t// missing `=` should be `null`:\n\t\t// http://w3.org/TR/2012/WD-url-20120524/#collect-url-parameters\n\t\tval = val === undefined ? null : decodeURIComponent(val);\n\n\t\tformatter(decodeURIComponent(key), val, ret);\n\t});\n\n\treturn Object.keys(ret).sort().reduce(function (result, key) {\n\t\tvar val = ret[key];\n\t\tif (Boolean(val) && typeof val === 'object' && !Array.isArray(val)) {\n\t\t\t// Sort object keys, not values\n\t\t\tresult[key] = keysSorter(val);\n\t\t} else {\n\t\t\tresult[key] = val;\n\t\t}\n\n\t\treturn result;\n\t}, Object.create(null));\n};\n\nexports.stringify = function (obj, opts) {\n\tvar defaults = {\n\t\tencode: true,\n\t\tstrict: true,\n\t\tarrayFormat: 'none'\n\t};\n\n\topts = objectAssign(defaults, opts);\n\n\tvar formatter = encoderForArrayFormat(opts);\n\n\treturn obj ? Object.keys(obj).sort().map(function (key) {\n\t\tvar val = obj[key];\n\n\t\tif (val === undefined) {\n\t\t\treturn '';\n\t\t}\n\n\t\tif (val === null) {\n\t\t\treturn encode(key, opts);\n\t\t}\n\n\t\tif (Array.isArray(val)) {\n\t\t\tvar result = [];\n\n\t\t\tval.slice().forEach(function (val2) {\n\t\t\t\tif (val2 === undefined) {\n\t\t\t\t\treturn;\n\t\t\t\t}\n\n\t\t\t\tresult.push(formatter(key, val2, result.length));\n\t\t\t});\n\n\t\t\treturn result.join('&');\n\t\t}\n\n\t\treturn encode(key, opts) + '=' + encode(val, opts);\n\t}).filter(function (x) {\n\t\treturn x.length > 0;\n\t}).join('&') : '';\n};\n",
+    {
+      "object-assign": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/object-assign/index.js",
+      "strict-uri-encode": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/strict-uri-encode/index.js"
+    },
+    {
+      "id": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/query-string/index.js",
+      "hash": "/8pPcg",
+      "browserifyId": 38,
       "sourcemap": ""
     }
   ],
@@ -774,7 +869,7 @@
     {
       "id": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/index.js",
       "hash": "/JJiUQ",
-      "browserifyId": 31,
+      "browserifyId": 39,
       "sourcemap": ""
     }
   ],
@@ -784,7 +879,7 @@
     {
       "id": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/ARIADOMPropertyConfig.js",
       "hash": "DS4Hdg",
-      "browserifyId": 32,
+      "browserifyId": 40,
       "sourcemap": ""
     }
   ],
@@ -797,7 +892,7 @@
     {
       "id": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/AutoFocusUtils.js",
       "hash": "dzbxig",
-      "browserifyId": 33,
+      "browserifyId": 41,
       "sourcemap": ""
     }
   ],
@@ -813,7 +908,7 @@
     {
       "id": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/BeforeInputEventPlugin.js",
       "hash": "GsmEPQ",
-      "browserifyId": 34,
+      "browserifyId": 42,
       "sourcemap": ""
     }
   ],
@@ -823,7 +918,7 @@
     {
       "id": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/CSSProperty.js",
       "hash": "OzSuCA",
-      "browserifyId": 35,
+      "browserifyId": 43,
       "sourcemap": ""
     }
   ],
@@ -837,13 +932,13 @@
       "fbjs/lib/warning": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/fbjs/lib/warning.js",
       "fbjs/lib/memoizeStringOnly": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/fbjs/lib/memoizeStringOnly.js",
       "./dangerousStyleValue": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/dangerousStyleValue.js",
-      "fbjs/lib/hyphenateStyleName": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/fbjs/lib/hyphenateStyleName.js",
-      "fbjs/lib/camelizeStyleName": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/fbjs/lib/camelizeStyleName.js"
+      "fbjs/lib/camelizeStyleName": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/fbjs/lib/camelizeStyleName.js",
+      "fbjs/lib/hyphenateStyleName": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/fbjs/lib/hyphenateStyleName.js"
     },
     {
       "id": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/CSSPropertyOperations.js",
       "hash": "QRaGMg",
-      "browserifyId": 36,
+      "browserifyId": 44,
       "sourcemap": ""
     }
   ],
@@ -858,7 +953,7 @@
     {
       "id": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/CallbackQueue.js",
       "hash": "vzYjUQ",
-      "browserifyId": 37,
+      "browserifyId": 45,
       "sourcemap": ""
     }
   ],
@@ -879,7 +974,7 @@
     {
       "id": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/ChangeEventPlugin.js",
       "hash": "EoVMlA",
-      "browserifyId": 38,
+      "browserifyId": 46,
       "sourcemap": ""
     }
   ],
@@ -898,7 +993,7 @@
     {
       "id": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/DOMChildrenOperations.js",
       "hash": "58rKLQ",
-      "browserifyId": 39,
+      "browserifyId": 47,
       "sourcemap": ""
     }
   ],
@@ -913,7 +1008,7 @@
     {
       "id": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/DOMLazyTree.js",
       "hash": "ks3RfA",
-      "browserifyId": 40,
+      "browserifyId": 48,
       "sourcemap": ""
     }
   ],
@@ -923,7 +1018,7 @@
     {
       "id": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/DOMNamespaces.js",
       "hash": "oYmxdA",
-      "browserifyId": 41,
+      "browserifyId": 49,
       "sourcemap": ""
     }
   ],
@@ -937,7 +1032,7 @@
     {
       "id": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/DOMProperty.js",
       "hash": "wfT9jg",
-      "browserifyId": 42,
+      "browserifyId": 50,
       "sourcemap": ""
     }
   ],
@@ -945,8 +1040,8 @@
     "(function (process){\n/**\n * Copyright 2013-present, Facebook, Inc.\n * All rights reserved.\n *\n * This source code is licensed under the BSD-style license found in the\n * LICENSE file in the root directory of this source tree. An additional grant\n * of patent rights can be found in the PATENTS file in the same directory.\n *\n */\n\n'use strict';\n\nvar DOMProperty = require('./DOMProperty');\nvar ReactDOMComponentTree = require('./ReactDOMComponentTree');\nvar ReactInstrumentation = require('./ReactInstrumentation');\n\nvar quoteAttributeValueForBrowser = require('./quoteAttributeValueForBrowser');\nvar warning = require('fbjs/lib/warning');\n\nvar VALID_ATTRIBUTE_NAME_REGEX = new RegExp('^[' + DOMProperty.ATTRIBUTE_NAME_START_CHAR + '][' + DOMProperty.ATTRIBUTE_NAME_CHAR + ']*$');\nvar illegalAttributeNameCache = {};\nvar validatedAttributeNameCache = {};\n\nfunction isAttributeNameSafe(attributeName) {\n  if (validatedAttributeNameCache.hasOwnProperty(attributeName)) {\n    return true;\n  }\n  if (illegalAttributeNameCache.hasOwnProperty(attributeName)) {\n    return false;\n  }\n  if (VALID_ATTRIBUTE_NAME_REGEX.test(attributeName)) {\n    validatedAttributeNameCache[attributeName] = true;\n    return true;\n  }\n  illegalAttributeNameCache[attributeName] = true;\n  process.env.NODE_ENV !== 'production' ? warning(false, 'Invalid attribute name: `%s`', attributeName) : void 0;\n  return false;\n}\n\nfunction shouldIgnoreValue(propertyInfo, value) {\n  return value == null || propertyInfo.hasBooleanValue && !value || propertyInfo.hasNumericValue && isNaN(value) || propertyInfo.hasPositiveNumericValue && value < 1 || propertyInfo.hasOverloadedBooleanValue && value === false;\n}\n\n/**\n * Operations for dealing with DOM properties.\n */\nvar DOMPropertyOperations = {\n  /**\n   * Creates markup for the ID property.\n   *\n   * @param {string} id Unescaped ID.\n   * @return {string} Markup string.\n   */\n  createMarkupForID: function (id) {\n    return DOMProperty.ID_ATTRIBUTE_NAME + '=' + quoteAttributeValueForBrowser(id);\n  },\n\n  setAttributeForID: function (node, id) {\n    node.setAttribute(DOMProperty.ID_ATTRIBUTE_NAME, id);\n  },\n\n  createMarkupForRoot: function () {\n    return DOMProperty.ROOT_ATTRIBUTE_NAME + '=\"\"';\n  },\n\n  setAttributeForRoot: function (node) {\n    node.setAttribute(DOMProperty.ROOT_ATTRIBUTE_NAME, '');\n  },\n\n  /**\n   * Creates markup for a property.\n   *\n   * @param {string} name\n   * @param {*} value\n   * @return {?string} Markup string, or null if the property was invalid.\n   */\n  createMarkupForProperty: function (name, value) {\n    var propertyInfo = DOMProperty.properties.hasOwnProperty(name) ? DOMProperty.properties[name] : null;\n    if (propertyInfo) {\n      if (shouldIgnoreValue(propertyInfo, value)) {\n        return '';\n      }\n      var attributeName = propertyInfo.attributeName;\n      if (propertyInfo.hasBooleanValue || propertyInfo.hasOverloadedBooleanValue && value === true) {\n        return attributeName + '=\"\"';\n      }\n      return attributeName + '=' + quoteAttributeValueForBrowser(value);\n    } else if (DOMProperty.isCustomAttribute(name)) {\n      if (value == null) {\n        return '';\n      }\n      return name + '=' + quoteAttributeValueForBrowser(value);\n    }\n    return null;\n  },\n\n  /**\n   * Creates markup for a custom property.\n   *\n   * @param {string} name\n   * @param {*} value\n   * @return {string} Markup string, or empty string if the property was invalid.\n   */\n  createMarkupForCustomAttribute: function (name, value) {\n    if (!isAttributeNameSafe(name) || value == null) {\n      return '';\n    }\n    return name + '=' + quoteAttributeValueForBrowser(value);\n  },\n\n  /**\n   * Sets the value for a property on a node.\n   *\n   * @param {DOMElement} node\n   * @param {string} name\n   * @param {*} value\n   */\n  setValueForProperty: function (node, name, value) {\n    var propertyInfo = DOMProperty.properties.hasOwnProperty(name) ? DOMProperty.properties[name] : null;\n    if (propertyInfo) {\n      var mutationMethod = propertyInfo.mutationMethod;\n      if (mutationMethod) {\n        mutationMethod(node, value);\n      } else if (shouldIgnoreValue(propertyInfo, value)) {\n        this.deleteValueForProperty(node, name);\n        return;\n      } else if (propertyInfo.mustUseProperty) {\n        // Contrary to `setAttribute`, object properties are properly\n        // `toString`ed by IE8/9.\n        node[propertyInfo.propertyName] = value;\n      } else {\n        var attributeName = propertyInfo.attributeName;\n        var namespace = propertyInfo.attributeNamespace;\n        // `setAttribute` with objects becomes only `[object]` in IE8/9,\n        // ('' + value) makes it output the correct toString()-value.\n        if (namespace) {\n          node.setAttributeNS(namespace, attributeName, '' + value);\n        } else if (propertyInfo.hasBooleanValue || propertyInfo.hasOverloadedBooleanValue && value === true) {\n          node.setAttribute(attributeName, '');\n        } else {\n          node.setAttribute(attributeName, '' + value);\n        }\n      }\n    } else if (DOMProperty.isCustomAttribute(name)) {\n      DOMPropertyOperations.setValueForAttribute(node, name, value);\n      return;\n    }\n\n    if (process.env.NODE_ENV !== 'production') {\n      var payload = {};\n      payload[name] = value;\n      ReactInstrumentation.debugTool.onHostOperation({\n        instanceID: ReactDOMComponentTree.getInstanceFromNode(node)._debugID,\n        type: 'update attribute',\n        payload: payload\n      });\n    }\n  },\n\n  setValueForAttribute: function (node, name, value) {\n    if (!isAttributeNameSafe(name)) {\n      return;\n    }\n    if (value == null) {\n      node.removeAttribute(name);\n    } else {\n      node.setAttribute(name, '' + value);\n    }\n\n    if (process.env.NODE_ENV !== 'production') {\n      var payload = {};\n      payload[name] = value;\n      ReactInstrumentation.debugTool.onHostOperation({\n        instanceID: ReactDOMComponentTree.getInstanceFromNode(node)._debugID,\n        type: 'update attribute',\n        payload: payload\n      });\n    }\n  },\n\n  /**\n   * Deletes an attributes from a node.\n   *\n   * @param {DOMElement} node\n   * @param {string} name\n   */\n  deleteValueForAttribute: function (node, name) {\n    node.removeAttribute(name);\n    if (process.env.NODE_ENV !== 'production') {\n      ReactInstrumentation.debugTool.onHostOperation({\n        instanceID: ReactDOMComponentTree.getInstanceFromNode(node)._debugID,\n        type: 'remove attribute',\n        payload: name\n      });\n    }\n  },\n\n  /**\n   * Deletes the value for a property on a node.\n   *\n   * @param {DOMElement} node\n   * @param {string} name\n   */\n  deleteValueForProperty: function (node, name) {\n    var propertyInfo = DOMProperty.properties.hasOwnProperty(name) ? DOMProperty.properties[name] : null;\n    if (propertyInfo) {\n      var mutationMethod = propertyInfo.mutationMethod;\n      if (mutationMethod) {\n        mutationMethod(node, undefined);\n      } else if (propertyInfo.mustUseProperty) {\n        var propName = propertyInfo.propertyName;\n        if (propertyInfo.hasBooleanValue) {\n          node[propName] = false;\n        } else {\n          node[propName] = '';\n        }\n      } else {\n        node.removeAttribute(propertyInfo.attributeName);\n      }\n    } else if (DOMProperty.isCustomAttribute(name)) {\n      node.removeAttribute(name);\n    }\n\n    if (process.env.NODE_ENV !== 'production') {\n      ReactInstrumentation.debugTool.onHostOperation({\n        instanceID: ReactDOMComponentTree.getInstanceFromNode(node)._debugID,\n        type: 'remove attribute',\n        payload: name\n      });\n    }\n  }\n};\n\nmodule.exports = DOMPropertyOperations;\n}).call(this,require('_process'))",
     {
       "_process": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/process/browser.js",
-      "./ReactDOMComponentTree": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/ReactDOMComponentTree.js",
       "./DOMProperty": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/DOMProperty.js",
+      "./ReactDOMComponentTree": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/ReactDOMComponentTree.js",
       "./ReactInstrumentation": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/ReactInstrumentation.js",
       "fbjs/lib/warning": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/fbjs/lib/warning.js",
       "./quoteAttributeValueForBrowser": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/quoteAttributeValueForBrowser.js"
@@ -954,7 +1049,7 @@
     {
       "id": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/DOMPropertyOperations.js",
       "hash": "B2zkwA",
-      "browserifyId": 43,
+      "browserifyId": 51,
       "sourcemap": ""
     }
   ],
@@ -972,7 +1067,7 @@
     {
       "id": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/Danger.js",
       "hash": "4j2+Dw",
-      "browserifyId": 44,
+      "browserifyId": 52,
       "sourcemap": ""
     }
   ],
@@ -982,7 +1077,7 @@
     {
       "id": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/DefaultEventPluginOrder.js",
       "hash": "cXThAQ",
-      "browserifyId": 45,
+      "browserifyId": 53,
       "sourcemap": ""
     }
   ],
@@ -996,7 +1091,7 @@
     {
       "id": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/EnterLeaveEventPlugin.js",
       "hash": "guDQSw",
-      "browserifyId": 46,
+      "browserifyId": 54,
       "sourcemap": ""
     }
   ],
@@ -1009,13 +1104,13 @@
       "./EventPluginUtils": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/EventPluginUtils.js",
       "./forEachAccumulated": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/forEachAccumulated.js",
       "./ReactErrorUtils": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/ReactErrorUtils.js",
-      "./accumulateInto": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/accumulateInto.js",
-      "fbjs/lib/invariant": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/fbjs/lib/invariant.js"
+      "fbjs/lib/invariant": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/fbjs/lib/invariant.js",
+      "./accumulateInto": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/accumulateInto.js"
     },
     {
       "id": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/EventPluginHub.js",
       "hash": "eEK3Gw",
-      "browserifyId": 47,
+      "browserifyId": 55,
       "sourcemap": ""
     }
   ],
@@ -1029,7 +1124,7 @@
     {
       "id": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/EventPluginRegistry.js",
       "hash": "OGS5Jg",
-      "browserifyId": 48,
+      "browserifyId": 56,
       "sourcemap": ""
     }
   ],
@@ -1045,7 +1140,7 @@
     {
       "id": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/EventPluginUtils.js",
       "hash": "UYIOkg",
-      "browserifyId": 49,
+      "browserifyId": 57,
       "sourcemap": ""
     }
   ],
@@ -1062,7 +1157,7 @@
     {
       "id": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/EventPropagators.js",
       "hash": "0fvzzw",
-      "browserifyId": 50,
+      "browserifyId": 58,
       "sourcemap": ""
     }
   ],
@@ -1076,7 +1171,7 @@
     {
       "id": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/FallbackCompositionState.js",
       "hash": "yn4TDg",
-      "browserifyId": 51,
+      "browserifyId": 59,
       "sourcemap": ""
     }
   ],
@@ -1088,7 +1183,7 @@
     {
       "id": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/HTMLDOMPropertyConfig.js",
       "hash": "s7XiSQ",
-      "browserifyId": 52,
+      "browserifyId": 60,
       "sourcemap": ""
     }
   ],
@@ -1098,7 +1193,7 @@
     {
       "id": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/KeyEscapeUtils.js",
       "hash": "gde1yQ",
-      "browserifyId": 53,
+      "browserifyId": 61,
       "sourcemap": ""
     }
   ],
@@ -1108,15 +1203,15 @@
       "_process": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/process/browser.js",
       "./reactProdInvariant": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/reactProdInvariant.js",
       "./ReactPropTypesSecret": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/ReactPropTypesSecret.js",
+      "prop-types/factory": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/prop-types/factory.js",
       "react/lib/React": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react/lib/React.js",
       "fbjs/lib/invariant": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/fbjs/lib/invariant.js",
-      "fbjs/lib/warning": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/fbjs/lib/warning.js",
-      "prop-types/factory": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/prop-types/factory.js"
+      "fbjs/lib/warning": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/fbjs/lib/warning.js"
     },
     {
       "id": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/LinkedValueUtils.js",
       "hash": "Q5Wvaw",
-      "browserifyId": 54,
+      "browserifyId": 62,
       "sourcemap": ""
     }
   ],
@@ -1130,7 +1225,7 @@
     {
       "id": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/PooledClass.js",
       "hash": "oNdU7A",
-      "browserifyId": 55,
+      "browserifyId": 63,
       "sourcemap": ""
     }
   ],
@@ -1147,7 +1242,7 @@
     {
       "id": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/ReactBrowserEventEmitter.js",
       "hash": "jq4doA",
-      "browserifyId": 56,
+      "browserifyId": 64,
       "sourcemap": ""
     }
   ],
@@ -1166,7 +1261,7 @@
     {
       "id": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/ReactChildReconciler.js",
       "hash": "S2V+vA",
-      "browserifyId": 57,
+      "browserifyId": 65,
       "sourcemap": ""
     }
   ],
@@ -1179,7 +1274,7 @@
     {
       "id": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/ReactComponentBrowserEnvironment.js",
       "hash": "sRVPyg",
-      "browserifyId": 58,
+      "browserifyId": 66,
       "sourcemap": ""
     }
   ],
@@ -1193,7 +1288,7 @@
     {
       "id": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/ReactComponentEnvironment.js",
       "hash": "8DK3kg",
-      "browserifyId": 59,
+      "browserifyId": 67,
       "sourcemap": ""
     }
   ],
@@ -1202,26 +1297,26 @@
     {
       "_process": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/process/browser.js",
       "./reactProdInvariant": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/reactProdInvariant.js",
-      "./ReactComponentEnvironment": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/ReactComponentEnvironment.js",
       "./ReactErrorUtils": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/ReactErrorUtils.js",
-      "./ReactInstanceMap": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/ReactInstanceMap.js",
+      "./ReactComponentEnvironment": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/ReactComponentEnvironment.js",
       "./ReactInstrumentation": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/ReactInstrumentation.js",
+      "./ReactInstanceMap": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/ReactInstanceMap.js",
       "./ReactNodeTypes": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/ReactNodeTypes.js",
       "./ReactReconciler": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/ReactReconciler.js",
       "./shouldUpdateReactComponent": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/shouldUpdateReactComponent.js",
       "object-assign": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/object-assign/index.js",
-      "react/lib/React": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react/lib/React.js",
       "react/lib/ReactCurrentOwner": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react/lib/ReactCurrentOwner.js",
+      "react/lib/React": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react/lib/React.js",
       "fbjs/lib/emptyObject": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/fbjs/lib/emptyObject.js",
+      "fbjs/lib/shallowEqual": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/fbjs/lib/shallowEqual.js",
       "fbjs/lib/invariant": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/fbjs/lib/invariant.js",
       "fbjs/lib/warning": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/fbjs/lib/warning.js",
-      "fbjs/lib/shallowEqual": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/fbjs/lib/shallowEqual.js",
       "./checkReactTypeSpec": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/checkReactTypeSpec.js"
     },
     {
       "id": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/ReactCompositeComponent.js",
       "hash": "T1u8WQ",
-      "browserifyId": 60,
+      "browserifyId": 68,
       "sourcemap": ""
     }
   ],
@@ -1231,24 +1326,24 @@
       "_process": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/process/browser.js",
       "./ReactVersion": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/ReactVersion.js",
       "fbjs/lib/ExecutionEnvironment": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/fbjs/lib/ExecutionEnvironment.js",
+      "fbjs/lib/warning": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/fbjs/lib/warning.js",
       "./renderSubtreeIntoContainer": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/renderSubtreeIntoContainer.js",
       "./findDOMNode": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/findDOMNode.js",
-      "fbjs/lib/warning": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/fbjs/lib/warning.js",
-      "./ReactDOMInvalidARIAHook": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/ReactDOMInvalidARIAHook.js",
       "./ReactDOMNullInputValuePropHook": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/ReactDOMNullInputValuePropHook.js",
+      "./ReactDOMInvalidARIAHook": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/ReactDOMInvalidARIAHook.js",
       "./ReactDOMComponentTree": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/ReactDOMComponentTree.js",
-      "./ReactUpdates": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/ReactUpdates.js",
       "./getHostComponentFromComposite": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/getHostComponentFromComposite.js",
+      "./ReactUpdates": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/ReactUpdates.js",
       "./ReactDOMUnknownPropertyHook": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/ReactDOMUnknownPropertyHook.js",
       "./ReactReconciler": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/ReactReconciler.js",
-      "./ReactInstrumentation": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/ReactInstrumentation.js",
       "./ReactMount": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/ReactMount.js",
+      "./ReactInstrumentation": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/ReactInstrumentation.js",
       "./ReactDefaultInjection": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/ReactDefaultInjection.js"
     },
     {
       "id": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/ReactDOM.js",
       "hash": "p/P5Lg",
-      "browserifyId": 61,
+      "browserifyId": 69,
       "sourcemap": ""
     }
   ],
@@ -1271,8 +1366,8 @@
       "./DOMNamespaces": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/DOMNamespaces.js",
       "./escapeTextContentForBrowser": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/escapeTextContentForBrowser.js",
       "./validateDOMNesting": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/validateDOMNesting.js",
-      "fbjs/lib/invariant": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/fbjs/lib/invariant.js",
       "fbjs/lib/emptyFunction": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/fbjs/lib/emptyFunction.js",
+      "fbjs/lib/invariant": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/fbjs/lib/invariant.js",
       "fbjs/lib/warning": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/fbjs/lib/warning.js",
       "fbjs/lib/shallowEqual": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/fbjs/lib/shallowEqual.js",
       "./ReactDOMOption": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/ReactDOMOption.js",
@@ -1288,7 +1383,7 @@
     {
       "id": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/ReactDOMComponent.js",
       "hash": "ScMhDg",
-      "browserifyId": 62,
+      "browserifyId": 70,
       "sourcemap": ""
     }
   ],
@@ -1298,7 +1393,7 @@
     {
       "id": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/ReactDOMComponentFlags.js",
       "hash": "vpnR8Q",
-      "browserifyId": 63,
+      "browserifyId": 71,
       "sourcemap": ""
     }
   ],
@@ -1314,7 +1409,7 @@
     {
       "id": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/ReactDOMComponentTree.js",
       "hash": "JINwVw",
-      "browserifyId": 64,
+      "browserifyId": 72,
       "sourcemap": ""
     }
   ],
@@ -1327,7 +1422,7 @@
     {
       "id": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/ReactDOMContainerInfo.js",
       "hash": "v4EaUg",
-      "browserifyId": 65,
+      "browserifyId": 73,
       "sourcemap": ""
     }
   ],
@@ -1341,7 +1436,7 @@
     {
       "id": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/ReactDOMEmptyComponent.js",
       "hash": "tA9vfQ",
-      "browserifyId": 66,
+      "browserifyId": 74,
       "sourcemap": ""
     }
   ],
@@ -1351,7 +1446,7 @@
     {
       "id": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/ReactDOMFeatureFlags.js",
       "hash": "UJdrtA",
-      "browserifyId": 67,
+      "browserifyId": 75,
       "sourcemap": ""
     }
   ],
@@ -1364,7 +1459,7 @@
     {
       "id": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/ReactDOMIDOperations.js",
       "hash": "W8QGxw",
-      "browserifyId": 68,
+      "browserifyId": 76,
       "sourcemap": ""
     }
   ],
@@ -1374,8 +1469,8 @@
       "_process": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/process/browser.js",
       "./reactProdInvariant": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/reactProdInvariant.js",
       "./DOMPropertyOperations": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/DOMPropertyOperations.js",
-      "./ReactUpdates": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/ReactUpdates.js",
       "./ReactDOMComponentTree": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/ReactDOMComponentTree.js",
+      "./ReactUpdates": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/ReactUpdates.js",
       "object-assign": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/object-assign/index.js",
       "fbjs/lib/invariant": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/fbjs/lib/invariant.js",
       "fbjs/lib/warning": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/fbjs/lib/warning.js",
@@ -1384,7 +1479,7 @@
     {
       "id": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/ReactDOMInput.js",
       "hash": "UVH+RA",
-      "browserifyId": 69,
+      "browserifyId": 77,
       "sourcemap": ""
     }
   ],
@@ -1392,14 +1487,14 @@
     "(function (process){\n/**\n * Copyright 2013-present, Facebook, Inc.\n * All rights reserved.\n *\n * This source code is licensed under the BSD-style license found in the\n * LICENSE file in the root directory of this source tree. An additional grant\n * of patent rights can be found in the PATENTS file in the same directory.\n *\n */\n\n'use strict';\n\nvar DOMProperty = require('./DOMProperty');\nvar ReactComponentTreeHook = require('react/lib/ReactComponentTreeHook');\n\nvar warning = require('fbjs/lib/warning');\n\nvar warnedProperties = {};\nvar rARIA = new RegExp('^(aria)-[' + DOMProperty.ATTRIBUTE_NAME_CHAR + ']*$');\n\nfunction validateProperty(tagName, name, debugID) {\n  if (warnedProperties.hasOwnProperty(name) && warnedProperties[name]) {\n    return true;\n  }\n\n  if (rARIA.test(name)) {\n    var lowerCasedName = name.toLowerCase();\n    var standardName = DOMProperty.getPossibleStandardName.hasOwnProperty(lowerCasedName) ? DOMProperty.getPossibleStandardName[lowerCasedName] : null;\n\n    // If this is an aria-* attribute, but is not listed in the known DOM\n    // DOM properties, then it is an invalid aria-* attribute.\n    if (standardName == null) {\n      warnedProperties[name] = true;\n      return false;\n    }\n    // aria-* attributes should be lowercase; suggest the lowercase version.\n    if (name !== standardName) {\n      process.env.NODE_ENV !== 'production' ? warning(false, 'Unknown ARIA attribute %s. Did you mean %s?%s', name, standardName, ReactComponentTreeHook.getStackAddendumByID(debugID)) : void 0;\n      warnedProperties[name] = true;\n      return true;\n    }\n  }\n\n  return true;\n}\n\nfunction warnInvalidARIAProps(debugID, element) {\n  var invalidProps = [];\n\n  for (var key in element.props) {\n    var isValid = validateProperty(element.type, key, debugID);\n    if (!isValid) {\n      invalidProps.push(key);\n    }\n  }\n\n  var unknownPropString = invalidProps.map(function (prop) {\n    return '`' + prop + '`';\n  }).join(', ');\n\n  if (invalidProps.length === 1) {\n    process.env.NODE_ENV !== 'production' ? warning(false, 'Invalid aria prop %s on <%s> tag. ' + 'For details, see https://fb.me/invalid-aria-prop%s', unknownPropString, element.type, ReactComponentTreeHook.getStackAddendumByID(debugID)) : void 0;\n  } else if (invalidProps.length > 1) {\n    process.env.NODE_ENV !== 'production' ? warning(false, 'Invalid aria props %s on <%s> tag. ' + 'For details, see https://fb.me/invalid-aria-prop%s', unknownPropString, element.type, ReactComponentTreeHook.getStackAddendumByID(debugID)) : void 0;\n  }\n}\n\nfunction handleElement(debugID, element) {\n  if (element == null || typeof element.type !== 'string') {\n    return;\n  }\n  if (element.type.indexOf('-') >= 0 || element.props.is) {\n    return;\n  }\n\n  warnInvalidARIAProps(debugID, element);\n}\n\nvar ReactDOMInvalidARIAHook = {\n  onBeforeMountComponent: function (debugID, element) {\n    if (process.env.NODE_ENV !== 'production') {\n      handleElement(debugID, element);\n    }\n  },\n  onBeforeUpdateComponent: function (debugID, element) {\n    if (process.env.NODE_ENV !== 'production') {\n      handleElement(debugID, element);\n    }\n  }\n};\n\nmodule.exports = ReactDOMInvalidARIAHook;\n}).call(this,require('_process'))",
     {
       "_process": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/process/browser.js",
+      "react/lib/ReactComponentTreeHook": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react/lib/ReactComponentTreeHook.js",
       "fbjs/lib/warning": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/fbjs/lib/warning.js",
-      "./DOMProperty": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/DOMProperty.js",
-      "react/lib/ReactComponentTreeHook": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react/lib/ReactComponentTreeHook.js"
+      "./DOMProperty": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/DOMProperty.js"
     },
     {
       "id": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/ReactDOMInvalidARIAHook.js",
       "hash": "UNOsxQ",
-      "browserifyId": 70,
+      "browserifyId": 78,
       "sourcemap": ""
     }
   ],
@@ -1413,7 +1508,7 @@
     {
       "id": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/ReactDOMNullInputValuePropHook.js",
       "hash": "VRNSGQ",
-      "browserifyId": 71,
+      "browserifyId": 79,
       "sourcemap": ""
     }
   ],
@@ -1430,7 +1525,7 @@
     {
       "id": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/ReactDOMOption.js",
       "hash": "ESzrew",
-      "browserifyId": 72,
+      "browserifyId": 80,
       "sourcemap": ""
     }
   ],
@@ -1447,7 +1542,7 @@
     {
       "id": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/ReactDOMSelect.js",
       "hash": "KXBjFA",
-      "browserifyId": 73,
+      "browserifyId": 81,
       "sourcemap": ""
     }
   ],
@@ -1461,7 +1556,7 @@
     {
       "id": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/ReactDOMSelection.js",
       "hash": "Iy8GWQ",
-      "browserifyId": 74,
+      "browserifyId": 82,
       "sourcemap": ""
     }
   ],
@@ -1481,7 +1576,7 @@
     {
       "id": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/ReactDOMTextComponent.js",
       "hash": "x48xdw",
-      "browserifyId": 75,
+      "browserifyId": 83,
       "sourcemap": ""
     }
   ],
@@ -1500,7 +1595,7 @@
     {
       "id": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/ReactDOMTextarea.js",
       "hash": "aFbJWA",
-      "browserifyId": 76,
+      "browserifyId": 84,
       "sourcemap": ""
     }
   ],
@@ -1514,7 +1609,7 @@
     {
       "id": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/ReactDOMTreeTraversal.js",
       "hash": "mYEAEg",
-      "browserifyId": 77,
+      "browserifyId": 85,
       "sourcemap": ""
     }
   ],
@@ -1530,7 +1625,7 @@
     {
       "id": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/ReactDOMUnknownPropertyHook.js",
       "hash": "eTa+eA",
-      "browserifyId": 78,
+      "browserifyId": 86,
       "sourcemap": ""
     }
   ],
@@ -1548,7 +1643,7 @@
     {
       "id": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/ReactDebugTool.js",
       "hash": "j4zxlw",
-      "browserifyId": 79,
+      "browserifyId": 87,
       "sourcemap": ""
     }
   ],
@@ -1563,7 +1658,7 @@
     {
       "id": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/ReactDefaultBatchingStrategy.js",
       "hash": "TjvwiA",
-      "browserifyId": 80,
+      "browserifyId": 88,
       "sourcemap": ""
     }
   ],
@@ -1593,7 +1688,7 @@
     {
       "id": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/ReactDefaultInjection.js",
       "hash": "XR0S+A",
-      "browserifyId": 81,
+      "browserifyId": 89,
       "sourcemap": ""
     }
   ],
@@ -1603,7 +1698,7 @@
     {
       "id": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/ReactElementSymbol.js",
       "hash": "0aQDfg",
-      "browserifyId": 82,
+      "browserifyId": 90,
       "sourcemap": ""
     }
   ],
@@ -1613,7 +1708,7 @@
     {
       "id": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/ReactEmptyComponent.js",
       "hash": "1F/BFw",
-      "browserifyId": 83,
+      "browserifyId": 91,
       "sourcemap": ""
     }
   ],
@@ -1625,7 +1720,7 @@
     {
       "id": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/ReactErrorUtils.js",
       "hash": "gCj+lA",
-      "browserifyId": 84,
+      "browserifyId": 92,
       "sourcemap": ""
     }
   ],
@@ -1637,7 +1732,7 @@
     {
       "id": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/ReactEventEmitterMixin.js",
       "hash": "GNgPjQ",
-      "browserifyId": 85,
+      "browserifyId": 93,
       "sourcemap": ""
     }
   ],
@@ -1656,7 +1751,7 @@
     {
       "id": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/ReactEventListener.js",
       "hash": "n51ZfQ",
-      "browserifyId": 86,
+      "browserifyId": 94,
       "sourcemap": ""
     }
   ],
@@ -1666,7 +1761,7 @@
     {
       "id": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/ReactFeatureFlags.js",
       "hash": "I9OPRg",
-      "browserifyId": 87,
+      "browserifyId": 95,
       "sourcemap": ""
     }
   ],
@@ -1680,7 +1775,7 @@
     {
       "id": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/ReactHostComponent.js",
       "hash": "dQjayQ",
-      "browserifyId": 88,
+      "browserifyId": 96,
       "sourcemap": ""
     }
   ],
@@ -1690,7 +1785,7 @@
     {
       "id": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/ReactHostOperationHistoryHook.js",
       "hash": "LhIEvQ",
-      "browserifyId": 89,
+      "browserifyId": 97,
       "sourcemap": ""
     }
   ],
@@ -1703,28 +1798,28 @@
       "./ReactEmptyComponent": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/ReactEmptyComponent.js",
       "./ReactHostComponent": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/ReactHostComponent.js",
       "./EventPluginHub": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/EventPluginHub.js",
-      "./ReactComponentEnvironment": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/ReactComponentEnvironment.js",
-      "./EventPluginUtils": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/EventPluginUtils.js"
+      "./EventPluginUtils": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/EventPluginUtils.js",
+      "./ReactComponentEnvironment": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/ReactComponentEnvironment.js"
     },
     {
       "id": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/ReactInjection.js",
       "hash": "Sspx5g",
-      "browserifyId": 90,
+      "browserifyId": 98,
       "sourcemap": ""
     }
   ],
   "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/ReactInputSelection.js": [
     "/**\n * Copyright 2013-present, Facebook, Inc.\n * All rights reserved.\n *\n * This source code is licensed under the BSD-style license found in the\n * LICENSE file in the root directory of this source tree. An additional grant\n * of patent rights can be found in the PATENTS file in the same directory.\n *\n */\n\n'use strict';\n\nvar ReactDOMSelection = require('./ReactDOMSelection');\n\nvar containsNode = require('fbjs/lib/containsNode');\nvar focusNode = require('fbjs/lib/focusNode');\nvar getActiveElement = require('fbjs/lib/getActiveElement');\n\nfunction isInDocument(node) {\n  return containsNode(document.documentElement, node);\n}\n\n/**\n * @ReactInputSelection: React input selection module. Based on Selection.js,\n * but modified to be suitable for react and has a couple of bug fixes (doesn't\n * assume buttons have range selections allowed).\n * Input selection module for React.\n */\nvar ReactInputSelection = {\n  hasSelectionCapabilities: function (elem) {\n    var nodeName = elem && elem.nodeName && elem.nodeName.toLowerCase();\n    return nodeName && (nodeName === 'input' && elem.type === 'text' || nodeName === 'textarea' || elem.contentEditable === 'true');\n  },\n\n  getSelectionInformation: function () {\n    var focusedElem = getActiveElement();\n    return {\n      focusedElem: focusedElem,\n      selectionRange: ReactInputSelection.hasSelectionCapabilities(focusedElem) ? ReactInputSelection.getSelection(focusedElem) : null\n    };\n  },\n\n  /**\n   * @restoreSelection: If any selection information was potentially lost,\n   * restore it. This is useful when performing operations that could remove dom\n   * nodes and place them back in, resulting in focus being lost.\n   */\n  restoreSelection: function (priorSelectionInformation) {\n    var curFocusedElem = getActiveElement();\n    var priorFocusedElem = priorSelectionInformation.focusedElem;\n    var priorSelectionRange = priorSelectionInformation.selectionRange;\n    if (curFocusedElem !== priorFocusedElem && isInDocument(priorFocusedElem)) {\n      if (ReactInputSelection.hasSelectionCapabilities(priorFocusedElem)) {\n        ReactInputSelection.setSelection(priorFocusedElem, priorSelectionRange);\n      }\n      focusNode(priorFocusedElem);\n    }\n  },\n\n  /**\n   * @getSelection: Gets the selection bounds of a focused textarea, input or\n   * contentEditable node.\n   * -@input: Look up selection bounds of this input\n   * -@return {start: selectionStart, end: selectionEnd}\n   */\n  getSelection: function (input) {\n    var selection;\n\n    if ('selectionStart' in input) {\n      // Modern browser with input or textarea.\n      selection = {\n        start: input.selectionStart,\n        end: input.selectionEnd\n      };\n    } else if (document.selection && input.nodeName && input.nodeName.toLowerCase() === 'input') {\n      // IE8 input.\n      var range = document.selection.createRange();\n      // There can only be one selection per document in IE, so it must\n      // be in our element.\n      if (range.parentElement() === input) {\n        selection = {\n          start: -range.moveStart('character', -input.value.length),\n          end: -range.moveEnd('character', -input.value.length)\n        };\n      }\n    } else {\n      // Content editable or old IE textarea.\n      selection = ReactDOMSelection.getOffsets(input);\n    }\n\n    return selection || { start: 0, end: 0 };\n  },\n\n  /**\n   * @setSelection: Sets the selection bounds of a textarea or input and focuses\n   * the input.\n   * -@input     Set selection bounds of this input or textarea\n   * -@offsets   Object of same form that is returned from get*\n   */\n  setSelection: function (input, offsets) {\n    var start = offsets.start;\n    var end = offsets.end;\n    if (end === undefined) {\n      end = start;\n    }\n\n    if ('selectionStart' in input) {\n      input.selectionStart = start;\n      input.selectionEnd = Math.min(end, input.value.length);\n    } else if (document.selection && input.nodeName && input.nodeName.toLowerCase() === 'input') {\n      var range = input.createTextRange();\n      range.collapse(true);\n      range.moveStart('character', start);\n      range.moveEnd('character', end - start);\n      range.select();\n    } else {\n      ReactDOMSelection.setOffsets(input, offsets);\n    }\n  }\n};\n\nmodule.exports = ReactInputSelection;",
     {
-      "fbjs/lib/getActiveElement": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/fbjs/lib/getActiveElement.js",
       "fbjs/lib/focusNode": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/fbjs/lib/focusNode.js",
+      "fbjs/lib/getActiveElement": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/fbjs/lib/getActiveElement.js",
       "./ReactDOMSelection": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/ReactDOMSelection.js",
       "fbjs/lib/containsNode": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/fbjs/lib/containsNode.js"
     },
     {
       "id": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/ReactInputSelection.js",
       "hash": "Wslffw",
-      "browserifyId": 91,
+      "browserifyId": 99,
       "sourcemap": ""
     }
   ],
@@ -1734,7 +1829,7 @@
     {
       "id": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/ReactInstanceMap.js",
       "hash": "NCR4dA",
-      "browserifyId": 92,
+      "browserifyId": 100,
       "sourcemap": ""
     }
   ],
@@ -1747,7 +1842,7 @@
     {
       "id": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/ReactInstrumentation.js",
       "hash": "tiacIw",
-      "browserifyId": 93,
+      "browserifyId": 101,
       "sourcemap": ""
     }
   ],
@@ -1760,7 +1855,7 @@
     {
       "id": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/ReactInvalidSetStateWarningHook.js",
       "hash": "2CTlCw",
-      "browserifyId": 94,
+      "browserifyId": 102,
       "sourcemap": ""
     }
   ],
@@ -1772,7 +1867,7 @@
     {
       "id": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/ReactMarkupChecksum.js",
       "hash": "GCeFYA",
-      "browserifyId": 95,
+      "browserifyId": 103,
       "sourcemap": ""
     }
   ],
@@ -1780,33 +1875,33 @@
     "(function (process){\n/**\n * Copyright 2013-present, Facebook, Inc.\n * All rights reserved.\n *\n * This source code is licensed under the BSD-style license found in the\n * LICENSE file in the root directory of this source tree. An additional grant\n * of patent rights can be found in the PATENTS file in the same directory.\n *\n */\n\n'use strict';\n\nvar _prodInvariant = require('./reactProdInvariant');\n\nvar DOMLazyTree = require('./DOMLazyTree');\nvar DOMProperty = require('./DOMProperty');\nvar React = require('react/lib/React');\nvar ReactBrowserEventEmitter = require('./ReactBrowserEventEmitter');\nvar ReactCurrentOwner = require('react/lib/ReactCurrentOwner');\nvar ReactDOMComponentTree = require('./ReactDOMComponentTree');\nvar ReactDOMContainerInfo = require('./ReactDOMContainerInfo');\nvar ReactDOMFeatureFlags = require('./ReactDOMFeatureFlags');\nvar ReactFeatureFlags = require('./ReactFeatureFlags');\nvar ReactInstanceMap = require('./ReactInstanceMap');\nvar ReactInstrumentation = require('./ReactInstrumentation');\nvar ReactMarkupChecksum = require('./ReactMarkupChecksum');\nvar ReactReconciler = require('./ReactReconciler');\nvar ReactUpdateQueue = require('./ReactUpdateQueue');\nvar ReactUpdates = require('./ReactUpdates');\n\nvar emptyObject = require('fbjs/lib/emptyObject');\nvar instantiateReactComponent = require('./instantiateReactComponent');\nvar invariant = require('fbjs/lib/invariant');\nvar setInnerHTML = require('./setInnerHTML');\nvar shouldUpdateReactComponent = require('./shouldUpdateReactComponent');\nvar warning = require('fbjs/lib/warning');\n\nvar ATTR_NAME = DOMProperty.ID_ATTRIBUTE_NAME;\nvar ROOT_ATTR_NAME = DOMProperty.ROOT_ATTRIBUTE_NAME;\n\nvar ELEMENT_NODE_TYPE = 1;\nvar DOC_NODE_TYPE = 9;\nvar DOCUMENT_FRAGMENT_NODE_TYPE = 11;\n\nvar instancesByReactRootID = {};\n\n/**\n * Finds the index of the first character\n * that's not common between the two given strings.\n *\n * @return {number} the index of the character where the strings diverge\n */\nfunction firstDifferenceIndex(string1, string2) {\n  var minLen = Math.min(string1.length, string2.length);\n  for (var i = 0; i < minLen; i++) {\n    if (string1.charAt(i) !== string2.charAt(i)) {\n      return i;\n    }\n  }\n  return string1.length === string2.length ? -1 : minLen;\n}\n\n/**\n * @param {DOMElement|DOMDocument} container DOM element that may contain\n * a React component\n * @return {?*} DOM element that may have the reactRoot ID, or null.\n */\nfunction getReactRootElementInContainer(container) {\n  if (!container) {\n    return null;\n  }\n\n  if (container.nodeType === DOC_NODE_TYPE) {\n    return container.documentElement;\n  } else {\n    return container.firstChild;\n  }\n}\n\nfunction internalGetID(node) {\n  // If node is something like a window, document, or text node, none of\n  // which support attributes or a .getAttribute method, gracefully return\n  // the empty string, as if the attribute were missing.\n  return node.getAttribute && node.getAttribute(ATTR_NAME) || '';\n}\n\n/**\n * Mounts this component and inserts it into the DOM.\n *\n * @param {ReactComponent} componentInstance The instance to mount.\n * @param {DOMElement} container DOM element to mount into.\n * @param {ReactReconcileTransaction} transaction\n * @param {boolean} shouldReuseMarkup If true, do not insert markup\n */\nfunction mountComponentIntoNode(wrapperInstance, container, transaction, shouldReuseMarkup, context) {\n  var markerName;\n  if (ReactFeatureFlags.logTopLevelRenders) {\n    var wrappedElement = wrapperInstance._currentElement.props.child;\n    var type = wrappedElement.type;\n    markerName = 'React mount: ' + (typeof type === 'string' ? type : type.displayName || type.name);\n    console.time(markerName);\n  }\n\n  var markup = ReactReconciler.mountComponent(wrapperInstance, transaction, null, ReactDOMContainerInfo(wrapperInstance, container), context, 0 /* parentDebugID */\n  );\n\n  if (markerName) {\n    console.timeEnd(markerName);\n  }\n\n  wrapperInstance._renderedComponent._topLevelWrapper = wrapperInstance;\n  ReactMount._mountImageIntoNode(markup, container, wrapperInstance, shouldReuseMarkup, transaction);\n}\n\n/**\n * Batched mount.\n *\n * @param {ReactComponent} componentInstance The instance to mount.\n * @param {DOMElement} container DOM element to mount into.\n * @param {boolean} shouldReuseMarkup If true, do not insert markup\n */\nfunction batchedMountComponentIntoNode(componentInstance, container, shouldReuseMarkup, context) {\n  var transaction = ReactUpdates.ReactReconcileTransaction.getPooled(\n  /* useCreateElement */\n  !shouldReuseMarkup && ReactDOMFeatureFlags.useCreateElement);\n  transaction.perform(mountComponentIntoNode, null, componentInstance, container, transaction, shouldReuseMarkup, context);\n  ReactUpdates.ReactReconcileTransaction.release(transaction);\n}\n\n/**\n * Unmounts a component and removes it from the DOM.\n *\n * @param {ReactComponent} instance React component instance.\n * @param {DOMElement} container DOM element to unmount from.\n * @final\n * @internal\n * @see {ReactMount.unmountComponentAtNode}\n */\nfunction unmountComponentFromNode(instance, container, safely) {\n  if (process.env.NODE_ENV !== 'production') {\n    ReactInstrumentation.debugTool.onBeginFlush();\n  }\n  ReactReconciler.unmountComponent(instance, safely);\n  if (process.env.NODE_ENV !== 'production') {\n    ReactInstrumentation.debugTool.onEndFlush();\n  }\n\n  if (container.nodeType === DOC_NODE_TYPE) {\n    container = container.documentElement;\n  }\n\n  // http://jsperf.com/emptying-a-node\n  while (container.lastChild) {\n    container.removeChild(container.lastChild);\n  }\n}\n\n/**\n * True if the supplied DOM node has a direct React-rendered child that is\n * not a React root element. Useful for warning in `render`,\n * `unmountComponentAtNode`, etc.\n *\n * @param {?DOMElement} node The candidate DOM node.\n * @return {boolean} True if the DOM element contains a direct child that was\n * rendered by React but is not a root element.\n * @internal\n */\nfunction hasNonRootReactChild(container) {\n  var rootEl = getReactRootElementInContainer(container);\n  if (rootEl) {\n    var inst = ReactDOMComponentTree.getInstanceFromNode(rootEl);\n    return !!(inst && inst._hostParent);\n  }\n}\n\n/**\n * True if the supplied DOM node is a React DOM element and\n * it has been rendered by another copy of React.\n *\n * @param {?DOMElement} node The candidate DOM node.\n * @return {boolean} True if the DOM has been rendered by another copy of React\n * @internal\n */\nfunction nodeIsRenderedByOtherInstance(container) {\n  var rootEl = getReactRootElementInContainer(container);\n  return !!(rootEl && isReactNode(rootEl) && !ReactDOMComponentTree.getInstanceFromNode(rootEl));\n}\n\n/**\n * True if the supplied DOM node is a valid node element.\n *\n * @param {?DOMElement} node The candidate DOM node.\n * @return {boolean} True if the DOM is a valid DOM node.\n * @internal\n */\nfunction isValidContainer(node) {\n  return !!(node && (node.nodeType === ELEMENT_NODE_TYPE || node.nodeType === DOC_NODE_TYPE || node.nodeType === DOCUMENT_FRAGMENT_NODE_TYPE));\n}\n\n/**\n * True if the supplied DOM node is a valid React node element.\n *\n * @param {?DOMElement} node The candidate DOM node.\n * @return {boolean} True if the DOM is a valid React DOM node.\n * @internal\n */\nfunction isReactNode(node) {\n  return isValidContainer(node) && (node.hasAttribute(ROOT_ATTR_NAME) || node.hasAttribute(ATTR_NAME));\n}\n\nfunction getHostRootInstanceInContainer(container) {\n  var rootEl = getReactRootElementInContainer(container);\n  var prevHostInstance = rootEl && ReactDOMComponentTree.getInstanceFromNode(rootEl);\n  return prevHostInstance && !prevHostInstance._hostParent ? prevHostInstance : null;\n}\n\nfunction getTopLevelWrapperInContainer(container) {\n  var root = getHostRootInstanceInContainer(container);\n  return root ? root._hostContainerInfo._topLevelWrapper : null;\n}\n\n/**\n * Temporary (?) hack so that we can store all top-level pending updates on\n * composites instead of having to worry about different types of components\n * here.\n */\nvar topLevelRootCounter = 1;\nvar TopLevelWrapper = function () {\n  this.rootID = topLevelRootCounter++;\n};\nTopLevelWrapper.prototype.isReactComponent = {};\nif (process.env.NODE_ENV !== 'production') {\n  TopLevelWrapper.displayName = 'TopLevelWrapper';\n}\nTopLevelWrapper.prototype.render = function () {\n  return this.props.child;\n};\nTopLevelWrapper.isReactTopLevelWrapper = true;\n\n/**\n * Mounting is the process of initializing a React component by creating its\n * representative DOM elements and inserting them into a supplied `container`.\n * Any prior content inside `container` is destroyed in the process.\n *\n *   ReactMount.render(\n *     component,\n *     document.getElementById('container')\n *   );\n *\n *   <div id=\"container\">                   <-- Supplied `container`.\n *     <div data-reactid=\".3\">              <-- Rendered reactRoot of React\n *       // ...                                 component.\n *     </div>\n *   </div>\n *\n * Inside of `container`, the first element rendered is the \"reactRoot\".\n */\nvar ReactMount = {\n  TopLevelWrapper: TopLevelWrapper,\n\n  /**\n   * Used by devtools. The keys are not important.\n   */\n  _instancesByReactRootID: instancesByReactRootID,\n\n  /**\n   * This is a hook provided to support rendering React components while\n   * ensuring that the apparent scroll position of its `container` does not\n   * change.\n   *\n   * @param {DOMElement} container The `container` being rendered into.\n   * @param {function} renderCallback This must be called once to do the render.\n   */\n  scrollMonitor: function (container, renderCallback) {\n    renderCallback();\n  },\n\n  /**\n   * Take a component that's already mounted into the DOM and replace its props\n   * @param {ReactComponent} prevComponent component instance already in the DOM\n   * @param {ReactElement} nextElement component instance to render\n   * @param {DOMElement} container container to render into\n   * @param {?function} callback function triggered on completion\n   */\n  _updateRootComponent: function (prevComponent, nextElement, nextContext, container, callback) {\n    ReactMount.scrollMonitor(container, function () {\n      ReactUpdateQueue.enqueueElementInternal(prevComponent, nextElement, nextContext);\n      if (callback) {\n        ReactUpdateQueue.enqueueCallbackInternal(prevComponent, callback);\n      }\n    });\n\n    return prevComponent;\n  },\n\n  /**\n   * Render a new component into the DOM. Hooked by hooks!\n   *\n   * @param {ReactElement} nextElement element to render\n   * @param {DOMElement} container container to render into\n   * @param {boolean} shouldReuseMarkup if we should skip the markup insertion\n   * @return {ReactComponent} nextComponent\n   */\n  _renderNewRootComponent: function (nextElement, container, shouldReuseMarkup, context) {\n    // Various parts of our code (such as ReactCompositeComponent's\n    // _renderValidatedComponent) assume that calls to render aren't nested;\n    // verify that that's the case.\n    process.env.NODE_ENV !== 'production' ? warning(ReactCurrentOwner.current == null, '_renderNewRootComponent(): Render methods should be a pure function ' + 'of props and state; triggering nested component updates from ' + 'render is not allowed. If necessary, trigger nested updates in ' + 'componentDidUpdate. Check the render method of %s.', ReactCurrentOwner.current && ReactCurrentOwner.current.getName() || 'ReactCompositeComponent') : void 0;\n\n    !isValidContainer(container) ? process.env.NODE_ENV !== 'production' ? invariant(false, '_registerComponent(...): Target container is not a DOM element.') : _prodInvariant('37') : void 0;\n\n    ReactBrowserEventEmitter.ensureScrollValueMonitoring();\n    var componentInstance = instantiateReactComponent(nextElement, false);\n\n    // The initial render is synchronous but any updates that happen during\n    // rendering, in componentWillMount or componentDidMount, will be batched\n    // according to the current batching strategy.\n\n    ReactUpdates.batchedUpdates(batchedMountComponentIntoNode, componentInstance, container, shouldReuseMarkup, context);\n\n    var wrapperID = componentInstance._instance.rootID;\n    instancesByReactRootID[wrapperID] = componentInstance;\n\n    return componentInstance;\n  },\n\n  /**\n   * Renders a React component into the DOM in the supplied `container`.\n   *\n   * If the React component was previously rendered into `container`, this will\n   * perform an update on it and only mutate the DOM as necessary to reflect the\n   * latest React component.\n   *\n   * @param {ReactComponent} parentComponent The conceptual parent of this render tree.\n   * @param {ReactElement} nextElement Component element to render.\n   * @param {DOMElement} container DOM element to render into.\n   * @param {?function} callback function triggered on completion\n   * @return {ReactComponent} Component instance rendered in `container`.\n   */\n  renderSubtreeIntoContainer: function (parentComponent, nextElement, container, callback) {\n    !(parentComponent != null && ReactInstanceMap.has(parentComponent)) ? process.env.NODE_ENV !== 'production' ? invariant(false, 'parentComponent must be a valid React Component') : _prodInvariant('38') : void 0;\n    return ReactMount._renderSubtreeIntoContainer(parentComponent, nextElement, container, callback);\n  },\n\n  _renderSubtreeIntoContainer: function (parentComponent, nextElement, container, callback) {\n    ReactUpdateQueue.validateCallback(callback, 'ReactDOM.render');\n    !React.isValidElement(nextElement) ? process.env.NODE_ENV !== 'production' ? invariant(false, 'ReactDOM.render(): Invalid component element.%s', typeof nextElement === 'string' ? \" Instead of passing a string like 'div', pass \" + \"React.createElement('div') or <div />.\" : typeof nextElement === 'function' ? ' Instead of passing a class like Foo, pass ' + 'React.createElement(Foo) or <Foo />.' : // Check if it quacks like an element\n    nextElement != null && nextElement.props !== undefined ? ' This may be caused by unintentionally loading two independent ' + 'copies of React.' : '') : _prodInvariant('39', typeof nextElement === 'string' ? \" Instead of passing a string like 'div', pass \" + \"React.createElement('div') or <div />.\" : typeof nextElement === 'function' ? ' Instead of passing a class like Foo, pass ' + 'React.createElement(Foo) or <Foo />.' : nextElement != null && nextElement.props !== undefined ? ' This may be caused by unintentionally loading two independent ' + 'copies of React.' : '') : void 0;\n\n    process.env.NODE_ENV !== 'production' ? warning(!container || !container.tagName || container.tagName.toUpperCase() !== 'BODY', 'render(): Rendering components directly into document.body is ' + 'discouraged, since its children are often manipulated by third-party ' + 'scripts and browser extensions. This may lead to subtle ' + 'reconciliation issues. Try rendering into a container element created ' + 'for your app.') : void 0;\n\n    var nextWrappedElement = React.createElement(TopLevelWrapper, {\n      child: nextElement\n    });\n\n    var nextContext;\n    if (parentComponent) {\n      var parentInst = ReactInstanceMap.get(parentComponent);\n      nextContext = parentInst._processChildContext(parentInst._context);\n    } else {\n      nextContext = emptyObject;\n    }\n\n    var prevComponent = getTopLevelWrapperInContainer(container);\n\n    if (prevComponent) {\n      var prevWrappedElement = prevComponent._currentElement;\n      var prevElement = prevWrappedElement.props.child;\n      if (shouldUpdateReactComponent(prevElement, nextElement)) {\n        var publicInst = prevComponent._renderedComponent.getPublicInstance();\n        var updatedCallback = callback && function () {\n          callback.call(publicInst);\n        };\n        ReactMount._updateRootComponent(prevComponent, nextWrappedElement, nextContext, container, updatedCallback);\n        return publicInst;\n      } else {\n        ReactMount.unmountComponentAtNode(container);\n      }\n    }\n\n    var reactRootElement = getReactRootElementInContainer(container);\n    var containerHasReactMarkup = reactRootElement && !!internalGetID(reactRootElement);\n    var containerHasNonRootReactChild = hasNonRootReactChild(container);\n\n    if (process.env.NODE_ENV !== 'production') {\n      process.env.NODE_ENV !== 'production' ? warning(!containerHasNonRootReactChild, 'render(...): Replacing React-rendered children with a new root ' + 'component. If you intended to update the children of this node, ' + 'you should instead have the existing children update their state ' + 'and render the new components instead of calling ReactDOM.render.') : void 0;\n\n      if (!containerHasReactMarkup || reactRootElement.nextSibling) {\n        var rootElementSibling = reactRootElement;\n        while (rootElementSibling) {\n          if (internalGetID(rootElementSibling)) {\n            process.env.NODE_ENV !== 'production' ? warning(false, 'render(): Target node has markup rendered by React, but there ' + 'are unrelated nodes as well. This is most commonly caused by ' + 'white-space inserted around server-rendered markup.') : void 0;\n            break;\n          }\n          rootElementSibling = rootElementSibling.nextSibling;\n        }\n      }\n    }\n\n    var shouldReuseMarkup = containerHasReactMarkup && !prevComponent && !containerHasNonRootReactChild;\n    var component = ReactMount._renderNewRootComponent(nextWrappedElement, container, shouldReuseMarkup, nextContext)._renderedComponent.getPublicInstance();\n    if (callback) {\n      callback.call(component);\n    }\n    return component;\n  },\n\n  /**\n   * Renders a React component into the DOM in the supplied `container`.\n   * See https://facebook.github.io/react/docs/top-level-api.html#reactdom.render\n   *\n   * If the React component was previously rendered into `container`, this will\n   * perform an update on it and only mutate the DOM as necessary to reflect the\n   * latest React component.\n   *\n   * @param {ReactElement} nextElement Component element to render.\n   * @param {DOMElement} container DOM element to render into.\n   * @param {?function} callback function triggered on completion\n   * @return {ReactComponent} Component instance rendered in `container`.\n   */\n  render: function (nextElement, container, callback) {\n    return ReactMount._renderSubtreeIntoContainer(null, nextElement, container, callback);\n  },\n\n  /**\n   * Unmounts and destroys the React component rendered in the `container`.\n   * See https://facebook.github.io/react/docs/top-level-api.html#reactdom.unmountcomponentatnode\n   *\n   * @param {DOMElement} container DOM element containing a React component.\n   * @return {boolean} True if a component was found in and unmounted from\n   *                   `container`\n   */\n  unmountComponentAtNode: function (container) {\n    // Various parts of our code (such as ReactCompositeComponent's\n    // _renderValidatedComponent) assume that calls to render aren't nested;\n    // verify that that's the case. (Strictly speaking, unmounting won't cause a\n    // render but we still don't expect to be in a render call here.)\n    process.env.NODE_ENV !== 'production' ? warning(ReactCurrentOwner.current == null, 'unmountComponentAtNode(): Render methods should be a pure function ' + 'of props and state; triggering nested component updates from render ' + 'is not allowed. If necessary, trigger nested updates in ' + 'componentDidUpdate. Check the render method of %s.', ReactCurrentOwner.current && ReactCurrentOwner.current.getName() || 'ReactCompositeComponent') : void 0;\n\n    !isValidContainer(container) ? process.env.NODE_ENV !== 'production' ? invariant(false, 'unmountComponentAtNode(...): Target container is not a DOM element.') : _prodInvariant('40') : void 0;\n\n    if (process.env.NODE_ENV !== 'production') {\n      process.env.NODE_ENV !== 'production' ? warning(!nodeIsRenderedByOtherInstance(container), \"unmountComponentAtNode(): The node you're attempting to unmount \" + 'was rendered by another copy of React.') : void 0;\n    }\n\n    var prevComponent = getTopLevelWrapperInContainer(container);\n    if (!prevComponent) {\n      // Check if the node being unmounted was rendered by React, but isn't a\n      // root node.\n      var containerHasNonRootReactChild = hasNonRootReactChild(container);\n\n      // Check if the container itself is a React root node.\n      var isContainerReactRoot = container.nodeType === 1 && container.hasAttribute(ROOT_ATTR_NAME);\n\n      if (process.env.NODE_ENV !== 'production') {\n        process.env.NODE_ENV !== 'production' ? warning(!containerHasNonRootReactChild, \"unmountComponentAtNode(): The node you're attempting to unmount \" + 'was rendered by React and is not a top-level container. %s', isContainerReactRoot ? 'You may have accidentally passed in a React root node instead ' + 'of its container.' : 'Instead, have the parent component update its state and ' + 'rerender in order to remove this component.') : void 0;\n      }\n\n      return false;\n    }\n    delete instancesByReactRootID[prevComponent._instance.rootID];\n    ReactUpdates.batchedUpdates(unmountComponentFromNode, prevComponent, container, false);\n    return true;\n  },\n\n  _mountImageIntoNode: function (markup, container, instance, shouldReuseMarkup, transaction) {\n    !isValidContainer(container) ? process.env.NODE_ENV !== 'production' ? invariant(false, 'mountComponentIntoNode(...): Target container is not valid.') : _prodInvariant('41') : void 0;\n\n    if (shouldReuseMarkup) {\n      var rootElement = getReactRootElementInContainer(container);\n      if (ReactMarkupChecksum.canReuseMarkup(markup, rootElement)) {\n        ReactDOMComponentTree.precacheNode(instance, rootElement);\n        return;\n      } else {\n        var checksum = rootElement.getAttribute(ReactMarkupChecksum.CHECKSUM_ATTR_NAME);\n        rootElement.removeAttribute(ReactMarkupChecksum.CHECKSUM_ATTR_NAME);\n\n        var rootMarkup = rootElement.outerHTML;\n        rootElement.setAttribute(ReactMarkupChecksum.CHECKSUM_ATTR_NAME, checksum);\n\n        var normalizedMarkup = markup;\n        if (process.env.NODE_ENV !== 'production') {\n          // because rootMarkup is retrieved from the DOM, various normalizations\n          // will have occurred which will not be present in `markup`. Here,\n          // insert markup into a <div> or <iframe> depending on the container\n          // type to perform the same normalizations before comparing.\n          var normalizer;\n          if (container.nodeType === ELEMENT_NODE_TYPE) {\n            normalizer = document.createElement('div');\n            normalizer.innerHTML = markup;\n            normalizedMarkup = normalizer.innerHTML;\n          } else {\n            normalizer = document.createElement('iframe');\n            document.body.appendChild(normalizer);\n            normalizer.contentDocument.write(markup);\n            normalizedMarkup = normalizer.contentDocument.documentElement.outerHTML;\n            document.body.removeChild(normalizer);\n          }\n        }\n\n        var diffIndex = firstDifferenceIndex(normalizedMarkup, rootMarkup);\n        var difference = ' (client) ' + normalizedMarkup.substring(diffIndex - 20, diffIndex + 20) + '\\n (server) ' + rootMarkup.substring(diffIndex - 20, diffIndex + 20);\n\n        !(container.nodeType !== DOC_NODE_TYPE) ? process.env.NODE_ENV !== 'production' ? invariant(false, 'You\\'re trying to render a component to the document using server rendering but the checksum was invalid. This usually means you rendered a different component type or props on the client from the one on the server, or your render() methods are impure. React cannot handle this case due to cross-browser quirks by rendering at the document root. You should look for environment dependent code in your components and ensure the props are the same client and server side:\\n%s', difference) : _prodInvariant('42', difference) : void 0;\n\n        if (process.env.NODE_ENV !== 'production') {\n          process.env.NODE_ENV !== 'production' ? warning(false, 'React attempted to reuse markup in a container but the ' + 'checksum was invalid. This generally means that you are ' + 'using server rendering and the markup generated on the ' + 'server was not what the client was expecting. React injected ' + 'new markup to compensate which works but you have lost many ' + 'of the benefits of server rendering. Instead, figure out ' + 'why the markup being generated is different on the client ' + 'or server:\\n%s', difference) : void 0;\n        }\n      }\n    }\n\n    !(container.nodeType !== DOC_NODE_TYPE) ? process.env.NODE_ENV !== 'production' ? invariant(false, 'You\\'re trying to render a component to the document but you didn\\'t use server rendering. We can\\'t do this without using server rendering due to cross-browser quirks. See ReactDOMServer.renderToString() for server rendering.') : _prodInvariant('43') : void 0;\n\n    if (transaction.useCreateElement) {\n      while (container.lastChild) {\n        container.removeChild(container.lastChild);\n      }\n      DOMLazyTree.insertTreeBefore(container, markup, null);\n    } else {\n      setInnerHTML(container, markup);\n      ReactDOMComponentTree.precacheNode(instance, container.firstChild);\n    }\n\n    if (process.env.NODE_ENV !== 'production') {\n      var hostNode = ReactDOMComponentTree.getInstanceFromNode(container.firstChild);\n      if (hostNode._debugID !== 0) {\n        ReactInstrumentation.debugTool.onHostOperation({\n          instanceID: hostNode._debugID,\n          type: 'mount',\n          payload: markup.toString()\n        });\n      }\n    }\n  }\n};\n\nmodule.exports = ReactMount;\n}).call(this,require('_process'))",
     {
       "_process": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/process/browser.js",
-      "./reactProdInvariant": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/reactProdInvariant.js",
-      "./DOMProperty": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/DOMProperty.js",
       "./ReactDOMComponentTree": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/ReactDOMComponentTree.js",
       "./ReactInstrumentation": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/ReactInstrumentation.js",
       "./ReactReconciler": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/ReactReconciler.js",
       "./ReactUpdates": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/ReactUpdates.js",
-      "./ReactFeatureFlags": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/ReactFeatureFlags.js",
+      "./reactProdInvariant": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/reactProdInvariant.js",
       "./ReactDOMFeatureFlags": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/ReactDOMFeatureFlags.js",
       "./ReactInstanceMap": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/ReactInstanceMap.js",
+      "./ReactFeatureFlags": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/ReactFeatureFlags.js",
       "./shouldUpdateReactComponent": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/shouldUpdateReactComponent.js",
+      "react/lib/React": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react/lib/React.js",
       "react/lib/ReactCurrentOwner": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react/lib/ReactCurrentOwner.js",
+      "./DOMProperty": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/DOMProperty.js",
+      "fbjs/lib/warning": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/fbjs/lib/warning.js",
       "fbjs/lib/emptyObject": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/fbjs/lib/emptyObject.js",
       "fbjs/lib/invariant": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/fbjs/lib/invariant.js",
-      "fbjs/lib/warning": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/fbjs/lib/warning.js",
       "./ReactMarkupChecksum": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/ReactMarkupChecksum.js",
       "./ReactUpdateQueue": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/ReactUpdateQueue.js",
       "./setInnerHTML": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/setInnerHTML.js",
       "./ReactDOMContainerInfo": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/ReactDOMContainerInfo.js",
       "./DOMLazyTree": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/DOMLazyTree.js",
       "./ReactBrowserEventEmitter": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/ReactBrowserEventEmitter.js",
-      "./instantiateReactComponent": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/instantiateReactComponent.js",
-      "react/lib/React": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react/lib/React.js"
+      "./instantiateReactComponent": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/instantiateReactComponent.js"
     },
     {
       "id": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/ReactMount.js",
       "hash": "ywwpbg",
-      "browserifyId": 96,
+      "browserifyId": 104,
       "sourcemap": ""
     }
   ],
@@ -1814,11 +1909,11 @@
     "(function (process){\n/**\n * Copyright 2013-present, Facebook, Inc.\n * All rights reserved.\n *\n * This source code is licensed under the BSD-style license found in the\n * LICENSE file in the root directory of this source tree. An additional grant\n * of patent rights can be found in the PATENTS file in the same directory.\n *\n */\n\n'use strict';\n\nvar _prodInvariant = require('./reactProdInvariant');\n\nvar ReactComponentEnvironment = require('./ReactComponentEnvironment');\nvar ReactInstanceMap = require('./ReactInstanceMap');\nvar ReactInstrumentation = require('./ReactInstrumentation');\n\nvar ReactCurrentOwner = require('react/lib/ReactCurrentOwner');\nvar ReactReconciler = require('./ReactReconciler');\nvar ReactChildReconciler = require('./ReactChildReconciler');\n\nvar emptyFunction = require('fbjs/lib/emptyFunction');\nvar flattenChildren = require('./flattenChildren');\nvar invariant = require('fbjs/lib/invariant');\n\n/**\n * Make an update for markup to be rendered and inserted at a supplied index.\n *\n * @param {string} markup Markup that renders into an element.\n * @param {number} toIndex Destination index.\n * @private\n */\nfunction makeInsertMarkup(markup, afterNode, toIndex) {\n  // NOTE: Null values reduce hidden classes.\n  return {\n    type: 'INSERT_MARKUP',\n    content: markup,\n    fromIndex: null,\n    fromNode: null,\n    toIndex: toIndex,\n    afterNode: afterNode\n  };\n}\n\n/**\n * Make an update for moving an existing element to another index.\n *\n * @param {number} fromIndex Source index of the existing element.\n * @param {number} toIndex Destination index of the element.\n * @private\n */\nfunction makeMove(child, afterNode, toIndex) {\n  // NOTE: Null values reduce hidden classes.\n  return {\n    type: 'MOVE_EXISTING',\n    content: null,\n    fromIndex: child._mountIndex,\n    fromNode: ReactReconciler.getHostNode(child),\n    toIndex: toIndex,\n    afterNode: afterNode\n  };\n}\n\n/**\n * Make an update for removing an element at an index.\n *\n * @param {number} fromIndex Index of the element to remove.\n * @private\n */\nfunction makeRemove(child, node) {\n  // NOTE: Null values reduce hidden classes.\n  return {\n    type: 'REMOVE_NODE',\n    content: null,\n    fromIndex: child._mountIndex,\n    fromNode: node,\n    toIndex: null,\n    afterNode: null\n  };\n}\n\n/**\n * Make an update for setting the markup of a node.\n *\n * @param {string} markup Markup that renders into an element.\n * @private\n */\nfunction makeSetMarkup(markup) {\n  // NOTE: Null values reduce hidden classes.\n  return {\n    type: 'SET_MARKUP',\n    content: markup,\n    fromIndex: null,\n    fromNode: null,\n    toIndex: null,\n    afterNode: null\n  };\n}\n\n/**\n * Make an update for setting the text content.\n *\n * @param {string} textContent Text content to set.\n * @private\n */\nfunction makeTextContent(textContent) {\n  // NOTE: Null values reduce hidden classes.\n  return {\n    type: 'TEXT_CONTENT',\n    content: textContent,\n    fromIndex: null,\n    fromNode: null,\n    toIndex: null,\n    afterNode: null\n  };\n}\n\n/**\n * Push an update, if any, onto the queue. Creates a new queue if none is\n * passed and always returns the queue. Mutative.\n */\nfunction enqueue(queue, update) {\n  if (update) {\n    queue = queue || [];\n    queue.push(update);\n  }\n  return queue;\n}\n\n/**\n * Processes any enqueued updates.\n *\n * @private\n */\nfunction processQueue(inst, updateQueue) {\n  ReactComponentEnvironment.processChildrenUpdates(inst, updateQueue);\n}\n\nvar setChildrenForInstrumentation = emptyFunction;\nif (process.env.NODE_ENV !== 'production') {\n  var getDebugID = function (inst) {\n    if (!inst._debugID) {\n      // Check for ART-like instances. TODO: This is silly/gross.\n      var internal;\n      if (internal = ReactInstanceMap.get(inst)) {\n        inst = internal;\n      }\n    }\n    return inst._debugID;\n  };\n  setChildrenForInstrumentation = function (children) {\n    var debugID = getDebugID(this);\n    // TODO: React Native empty components are also multichild.\n    // This means they still get into this method but don't have _debugID.\n    if (debugID !== 0) {\n      ReactInstrumentation.debugTool.onSetChildren(debugID, children ? Object.keys(children).map(function (key) {\n        return children[key]._debugID;\n      }) : []);\n    }\n  };\n}\n\n/**\n * ReactMultiChild are capable of reconciling multiple children.\n *\n * @class ReactMultiChild\n * @internal\n */\nvar ReactMultiChild = {\n  /**\n   * Provides common functionality for components that must reconcile multiple\n   * children. This is used by `ReactDOMComponent` to mount, update, and\n   * unmount child components.\n   *\n   * @lends {ReactMultiChild.prototype}\n   */\n  Mixin: {\n    _reconcilerInstantiateChildren: function (nestedChildren, transaction, context) {\n      if (process.env.NODE_ENV !== 'production') {\n        var selfDebugID = getDebugID(this);\n        if (this._currentElement) {\n          try {\n            ReactCurrentOwner.current = this._currentElement._owner;\n            return ReactChildReconciler.instantiateChildren(nestedChildren, transaction, context, selfDebugID);\n          } finally {\n            ReactCurrentOwner.current = null;\n          }\n        }\n      }\n      return ReactChildReconciler.instantiateChildren(nestedChildren, transaction, context);\n    },\n\n    _reconcilerUpdateChildren: function (prevChildren, nextNestedChildrenElements, mountImages, removedNodes, transaction, context) {\n      var nextChildren;\n      var selfDebugID = 0;\n      if (process.env.NODE_ENV !== 'production') {\n        selfDebugID = getDebugID(this);\n        if (this._currentElement) {\n          try {\n            ReactCurrentOwner.current = this._currentElement._owner;\n            nextChildren = flattenChildren(nextNestedChildrenElements, selfDebugID);\n          } finally {\n            ReactCurrentOwner.current = null;\n          }\n          ReactChildReconciler.updateChildren(prevChildren, nextChildren, mountImages, removedNodes, transaction, this, this._hostContainerInfo, context, selfDebugID);\n          return nextChildren;\n        }\n      }\n      nextChildren = flattenChildren(nextNestedChildrenElements, selfDebugID);\n      ReactChildReconciler.updateChildren(prevChildren, nextChildren, mountImages, removedNodes, transaction, this, this._hostContainerInfo, context, selfDebugID);\n      return nextChildren;\n    },\n\n    /**\n     * Generates a \"mount image\" for each of the supplied children. In the case\n     * of `ReactDOMComponent`, a mount image is a string of markup.\n     *\n     * @param {?object} nestedChildren Nested child maps.\n     * @return {array} An array of mounted representations.\n     * @internal\n     */\n    mountChildren: function (nestedChildren, transaction, context) {\n      var children = this._reconcilerInstantiateChildren(nestedChildren, transaction, context);\n      this._renderedChildren = children;\n\n      var mountImages = [];\n      var index = 0;\n      for (var name in children) {\n        if (children.hasOwnProperty(name)) {\n          var child = children[name];\n          var selfDebugID = 0;\n          if (process.env.NODE_ENV !== 'production') {\n            selfDebugID = getDebugID(this);\n          }\n          var mountImage = ReactReconciler.mountComponent(child, transaction, this, this._hostContainerInfo, context, selfDebugID);\n          child._mountIndex = index++;\n          mountImages.push(mountImage);\n        }\n      }\n\n      if (process.env.NODE_ENV !== 'production') {\n        setChildrenForInstrumentation.call(this, children);\n      }\n\n      return mountImages;\n    },\n\n    /**\n     * Replaces any rendered children with a text content string.\n     *\n     * @param {string} nextContent String of content.\n     * @internal\n     */\n    updateTextContent: function (nextContent) {\n      var prevChildren = this._renderedChildren;\n      // Remove any rendered children.\n      ReactChildReconciler.unmountChildren(prevChildren, false);\n      for (var name in prevChildren) {\n        if (prevChildren.hasOwnProperty(name)) {\n          !false ? process.env.NODE_ENV !== 'production' ? invariant(false, 'updateTextContent called on non-empty component.') : _prodInvariant('118') : void 0;\n        }\n      }\n      // Set new text content.\n      var updates = [makeTextContent(nextContent)];\n      processQueue(this, updates);\n    },\n\n    /**\n     * Replaces any rendered children with a markup string.\n     *\n     * @param {string} nextMarkup String of markup.\n     * @internal\n     */\n    updateMarkup: function (nextMarkup) {\n      var prevChildren = this._renderedChildren;\n      // Remove any rendered children.\n      ReactChildReconciler.unmountChildren(prevChildren, false);\n      for (var name in prevChildren) {\n        if (prevChildren.hasOwnProperty(name)) {\n          !false ? process.env.NODE_ENV !== 'production' ? invariant(false, 'updateTextContent called on non-empty component.') : _prodInvariant('118') : void 0;\n        }\n      }\n      var updates = [makeSetMarkup(nextMarkup)];\n      processQueue(this, updates);\n    },\n\n    /**\n     * Updates the rendered children with new children.\n     *\n     * @param {?object} nextNestedChildrenElements Nested child element maps.\n     * @param {ReactReconcileTransaction} transaction\n     * @internal\n     */\n    updateChildren: function (nextNestedChildrenElements, transaction, context) {\n      // Hook used by React ART\n      this._updateChildren(nextNestedChildrenElements, transaction, context);\n    },\n\n    /**\n     * @param {?object} nextNestedChildrenElements Nested child element maps.\n     * @param {ReactReconcileTransaction} transaction\n     * @final\n     * @protected\n     */\n    _updateChildren: function (nextNestedChildrenElements, transaction, context) {\n      var prevChildren = this._renderedChildren;\n      var removedNodes = {};\n      var mountImages = [];\n      var nextChildren = this._reconcilerUpdateChildren(prevChildren, nextNestedChildrenElements, mountImages, removedNodes, transaction, context);\n      if (!nextChildren && !prevChildren) {\n        return;\n      }\n      var updates = null;\n      var name;\n      // `nextIndex` will increment for each child in `nextChildren`, but\n      // `lastIndex` will be the last index visited in `prevChildren`.\n      var nextIndex = 0;\n      var lastIndex = 0;\n      // `nextMountIndex` will increment for each newly mounted child.\n      var nextMountIndex = 0;\n      var lastPlacedNode = null;\n      for (name in nextChildren) {\n        if (!nextChildren.hasOwnProperty(name)) {\n          continue;\n        }\n        var prevChild = prevChildren && prevChildren[name];\n        var nextChild = nextChildren[name];\n        if (prevChild === nextChild) {\n          updates = enqueue(updates, this.moveChild(prevChild, lastPlacedNode, nextIndex, lastIndex));\n          lastIndex = Math.max(prevChild._mountIndex, lastIndex);\n          prevChild._mountIndex = nextIndex;\n        } else {\n          if (prevChild) {\n            // Update `lastIndex` before `_mountIndex` gets unset by unmounting.\n            lastIndex = Math.max(prevChild._mountIndex, lastIndex);\n            // The `removedNodes` loop below will actually remove the child.\n          }\n          // The child must be instantiated before it's mounted.\n          updates = enqueue(updates, this._mountChildAtIndex(nextChild, mountImages[nextMountIndex], lastPlacedNode, nextIndex, transaction, context));\n          nextMountIndex++;\n        }\n        nextIndex++;\n        lastPlacedNode = ReactReconciler.getHostNode(nextChild);\n      }\n      // Remove children that are no longer present.\n      for (name in removedNodes) {\n        if (removedNodes.hasOwnProperty(name)) {\n          updates = enqueue(updates, this._unmountChild(prevChildren[name], removedNodes[name]));\n        }\n      }\n      if (updates) {\n        processQueue(this, updates);\n      }\n      this._renderedChildren = nextChildren;\n\n      if (process.env.NODE_ENV !== 'production') {\n        setChildrenForInstrumentation.call(this, nextChildren);\n      }\n    },\n\n    /**\n     * Unmounts all rendered children. This should be used to clean up children\n     * when this component is unmounted. It does not actually perform any\n     * backend operations.\n     *\n     * @internal\n     */\n    unmountChildren: function (safely) {\n      var renderedChildren = this._renderedChildren;\n      ReactChildReconciler.unmountChildren(renderedChildren, safely);\n      this._renderedChildren = null;\n    },\n\n    /**\n     * Moves a child component to the supplied index.\n     *\n     * @param {ReactComponent} child Component to move.\n     * @param {number} toIndex Destination index of the element.\n     * @param {number} lastIndex Last index visited of the siblings of `child`.\n     * @protected\n     */\n    moveChild: function (child, afterNode, toIndex, lastIndex) {\n      // If the index of `child` is less than `lastIndex`, then it needs to\n      // be moved. Otherwise, we do not need to move it because a child will be\n      // inserted or moved before `child`.\n      if (child._mountIndex < lastIndex) {\n        return makeMove(child, afterNode, toIndex);\n      }\n    },\n\n    /**\n     * Creates a child component.\n     *\n     * @param {ReactComponent} child Component to create.\n     * @param {string} mountImage Markup to insert.\n     * @protected\n     */\n    createChild: function (child, afterNode, mountImage) {\n      return makeInsertMarkup(mountImage, afterNode, child._mountIndex);\n    },\n\n    /**\n     * Removes a child component.\n     *\n     * @param {ReactComponent} child Child to remove.\n     * @protected\n     */\n    removeChild: function (child, node) {\n      return makeRemove(child, node);\n    },\n\n    /**\n     * Mounts a child with the supplied name.\n     *\n     * NOTE: This is part of `updateChildren` and is here for readability.\n     *\n     * @param {ReactComponent} child Component to mount.\n     * @param {string} name Name of the child.\n     * @param {number} index Index at which to insert the child.\n     * @param {ReactReconcileTransaction} transaction\n     * @private\n     */\n    _mountChildAtIndex: function (child, mountImage, afterNode, index, transaction, context) {\n      child._mountIndex = index;\n      return this.createChild(child, afterNode, mountImage);\n    },\n\n    /**\n     * Unmounts a rendered child.\n     *\n     * NOTE: This is part of `updateChildren` and is here for readability.\n     *\n     * @param {ReactComponent} child Component to unmount.\n     * @private\n     */\n    _unmountChild: function (child, node) {\n      var update = this.removeChild(child, node);\n      child._mountIndex = null;\n      return update;\n    }\n  }\n};\n\nmodule.exports = ReactMultiChild;\n}).call(this,require('_process'))",
     {
       "_process": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/process/browser.js",
-      "./ReactComponentEnvironment": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/ReactComponentEnvironment.js",
-      "./ReactInstanceMap": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/ReactInstanceMap.js",
-      "./ReactInstrumentation": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/ReactInstrumentation.js",
-      "./ReactReconciler": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/ReactReconciler.js",
       "./reactProdInvariant": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/reactProdInvariant.js",
+      "./ReactComponentEnvironment": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/ReactComponentEnvironment.js",
+      "./ReactInstrumentation": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/ReactInstrumentation.js",
+      "./ReactInstanceMap": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/ReactInstanceMap.js",
+      "./ReactReconciler": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/ReactReconciler.js",
       "react/lib/ReactCurrentOwner": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react/lib/ReactCurrentOwner.js",
       "fbjs/lib/emptyFunction": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/fbjs/lib/emptyFunction.js",
       "fbjs/lib/invariant": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/fbjs/lib/invariant.js",
@@ -1828,7 +1923,7 @@
     {
       "id": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/ReactMultiChild.js",
       "hash": "4wM8Cw",
-      "browserifyId": 97,
+      "browserifyId": 105,
       "sourcemap": ""
     }
   ],
@@ -1843,7 +1938,7 @@
     {
       "id": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/ReactNodeTypes.js",
       "hash": "eyzJ3w",
-      "browserifyId": 98,
+      "browserifyId": 106,
       "sourcemap": ""
     }
   ],
@@ -1857,7 +1952,7 @@
     {
       "id": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/ReactOwner.js",
       "hash": "sto5QA",
-      "browserifyId": 99,
+      "browserifyId": 107,
       "sourcemap": ""
     }
   ],
@@ -1869,7 +1964,7 @@
     {
       "id": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/ReactPropTypeLocationNames.js",
       "hash": "hN9+5w",
-      "browserifyId": 100,
+      "browserifyId": 108,
       "sourcemap": ""
     }
   ],
@@ -1879,7 +1974,7 @@
     {
       "id": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/ReactPropTypesSecret.js",
       "hash": "23944Q",
-      "browserifyId": 101,
+      "browserifyId": 109,
       "sourcemap": ""
     }
   ],
@@ -1890,8 +1985,8 @@
       "./CallbackQueue": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/CallbackQueue.js",
       "./PooledClass": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/PooledClass.js",
       "./ReactBrowserEventEmitter": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/ReactBrowserEventEmitter.js",
-      "./ReactInstrumentation": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/ReactInstrumentation.js",
       "./Transaction": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/Transaction.js",
+      "./ReactInstrumentation": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/ReactInstrumentation.js",
       "./ReactUpdateQueue": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/ReactUpdateQueue.js",
       "object-assign": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/object-assign/index.js",
       "./ReactInputSelection": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/ReactInputSelection.js"
@@ -1899,7 +1994,7 @@
     {
       "id": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/ReactReconcileTransaction.js",
       "hash": "nvoI7A",
-      "browserifyId": 102,
+      "browserifyId": 110,
       "sourcemap": ""
     }
   ],
@@ -1914,7 +2009,7 @@
     {
       "id": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/ReactReconciler.js",
       "hash": "AG30HA",
-      "browserifyId": 103,
+      "browserifyId": 111,
       "sourcemap": ""
     }
   ],
@@ -1926,7 +2021,7 @@
     {
       "id": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/ReactRef.js",
       "hash": "w4hU6Q",
-      "browserifyId": 104,
+      "browserifyId": 112,
       "sourcemap": ""
     }
   ],
@@ -1943,7 +2038,7 @@
     {
       "id": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/ReactServerRenderingTransaction.js",
       "hash": "1eDuEA",
-      "browserifyId": 105,
+      "browserifyId": 113,
       "sourcemap": ""
     }
   ],
@@ -1957,7 +2052,7 @@
     {
       "id": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/ReactServerUpdateQueue.js",
       "hash": "9RphEg",
-      "browserifyId": 106,
+      "browserifyId": 114,
       "sourcemap": ""
     }
   ],
@@ -1976,7 +2071,7 @@
     {
       "id": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/ReactUpdateQueue.js",
       "hash": "tcWkJA",
-      "browserifyId": 107,
+      "browserifyId": 115,
       "sourcemap": ""
     }
   ],
@@ -1990,13 +2085,13 @@
       "object-assign": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/object-assign/index.js",
       "fbjs/lib/invariant": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/fbjs/lib/invariant.js",
       "./CallbackQueue": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/CallbackQueue.js",
-      "./PooledClass": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/PooledClass.js",
-      "./Transaction": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/Transaction.js"
+      "./Transaction": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/Transaction.js",
+      "./PooledClass": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/PooledClass.js"
     },
     {
       "id": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/ReactUpdates.js",
       "hash": "hQTDsQ",
-      "browserifyId": 108,
+      "browserifyId": 116,
       "sourcemap": ""
     }
   ],
@@ -2006,7 +2101,7 @@
     {
       "id": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/ReactVersion.js",
       "hash": "vBz9kQ",
-      "browserifyId": 109,
+      "browserifyId": 117,
       "sourcemap": ""
     }
   ],
@@ -2016,7 +2111,7 @@
     {
       "id": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/SVGDOMPropertyConfig.js",
       "hash": "ZhwHCg",
-      "browserifyId": 110,
+      "browserifyId": 118,
       "sourcemap": ""
     }
   ],
@@ -2035,7 +2130,7 @@
     {
       "id": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/SelectEventPlugin.js",
       "hash": "/pmcAQ",
-      "browserifyId": 111,
+      "browserifyId": 119,
       "sourcemap": ""
     }
   ],
@@ -2044,28 +2139,28 @@
     {
       "_process": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/process/browser.js",
       "./reactProdInvariant": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/reactProdInvariant.js",
-      "./ReactDOMComponentTree": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/ReactDOMComponentTree.js",
       "./EventPropagators": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/EventPropagators.js",
+      "./ReactDOMComponentTree": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/ReactDOMComponentTree.js",
       "./SyntheticEvent": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/SyntheticEvent.js",
       "./SyntheticMouseEvent": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/SyntheticMouseEvent.js",
       "./getEventCharCode": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/getEventCharCode.js",
       "fbjs/lib/emptyFunction": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/fbjs/lib/emptyFunction.js",
       "fbjs/lib/invariant": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/fbjs/lib/invariant.js",
       "fbjs/lib/EventListener": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/fbjs/lib/EventListener.js",
-      "./SyntheticClipboardEvent": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/SyntheticClipboardEvent.js",
       "./SyntheticAnimationEvent": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/SyntheticAnimationEvent.js",
+      "./SyntheticClipboardEvent": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/SyntheticClipboardEvent.js",
       "./SyntheticFocusEvent": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/SyntheticFocusEvent.js",
       "./SyntheticDragEvent": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/SyntheticDragEvent.js",
       "./SyntheticTouchEvent": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/SyntheticTouchEvent.js",
-      "./SyntheticWheelEvent": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/SyntheticWheelEvent.js",
       "./SyntheticTransitionEvent": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/SyntheticTransitionEvent.js",
       "./SyntheticUIEvent": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/SyntheticUIEvent.js",
+      "./SyntheticWheelEvent": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/SyntheticWheelEvent.js",
       "./SyntheticKeyboardEvent": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/SyntheticKeyboardEvent.js"
     },
     {
       "id": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/SimpleEventPlugin.js",
       "hash": "N8XKPQ",
-      "browserifyId": 112,
+      "browserifyId": 120,
       "sourcemap": ""
     }
   ],
@@ -2077,7 +2172,7 @@
     {
       "id": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/SyntheticAnimationEvent.js",
       "hash": "fUXpiw",
-      "browserifyId": 113,
+      "browserifyId": 121,
       "sourcemap": ""
     }
   ],
@@ -2089,7 +2184,7 @@
     {
       "id": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/SyntheticClipboardEvent.js",
       "hash": "SSCjAw",
-      "browserifyId": 114,
+      "browserifyId": 122,
       "sourcemap": ""
     }
   ],
@@ -2101,7 +2196,7 @@
     {
       "id": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/SyntheticCompositionEvent.js",
       "hash": "bdI9ew",
-      "browserifyId": 115,
+      "browserifyId": 123,
       "sourcemap": ""
     }
   ],
@@ -2113,7 +2208,7 @@
     {
       "id": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/SyntheticDragEvent.js",
       "hash": "ryUBvQ",
-      "browserifyId": 116,
+      "browserifyId": 124,
       "sourcemap": ""
     }
   ],
@@ -2129,7 +2224,7 @@
     {
       "id": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/SyntheticEvent.js",
       "hash": "gAzjMQ",
-      "browserifyId": 117,
+      "browserifyId": 125,
       "sourcemap": ""
     }
   ],
@@ -2141,7 +2236,7 @@
     {
       "id": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/SyntheticFocusEvent.js",
       "hash": "XKhxGQ",
-      "browserifyId": 118,
+      "browserifyId": 126,
       "sourcemap": ""
     }
   ],
@@ -2153,22 +2248,22 @@
     {
       "id": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/SyntheticInputEvent.js",
       "hash": "GpTTsg",
-      "browserifyId": 119,
+      "browserifyId": 127,
       "sourcemap": ""
     }
   ],
   "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/SyntheticKeyboardEvent.js": [
     "/**\n * Copyright 2013-present, Facebook, Inc.\n * All rights reserved.\n *\n * This source code is licensed under the BSD-style license found in the\n * LICENSE file in the root directory of this source tree. An additional grant\n * of patent rights can be found in the PATENTS file in the same directory.\n *\n */\n\n'use strict';\n\nvar SyntheticUIEvent = require('./SyntheticUIEvent');\n\nvar getEventCharCode = require('./getEventCharCode');\nvar getEventKey = require('./getEventKey');\nvar getEventModifierState = require('./getEventModifierState');\n\n/**\n * @interface KeyboardEvent\n * @see http://www.w3.org/TR/DOM-Level-3-Events/\n */\nvar KeyboardEventInterface = {\n  key: getEventKey,\n  location: null,\n  ctrlKey: null,\n  shiftKey: null,\n  altKey: null,\n  metaKey: null,\n  repeat: null,\n  locale: null,\n  getModifierState: getEventModifierState,\n  // Legacy Interface\n  charCode: function (event) {\n    // `charCode` is the result of a KeyPress event and represents the value of\n    // the actual printable character.\n\n    // KeyPress is deprecated, but its replacement is not yet final and not\n    // implemented in any major browser. Only KeyPress has charCode.\n    if (event.type === 'keypress') {\n      return getEventCharCode(event);\n    }\n    return 0;\n  },\n  keyCode: function (event) {\n    // `keyCode` is the result of a KeyDown/Up event and represents the value of\n    // physical keyboard key.\n\n    // The actual meaning of the value depends on the users' keyboard layout\n    // which cannot be detected. Assuming that it is a US keyboard layout\n    // provides a surprisingly accurate mapping for US and European users.\n    // Due to this, it is left to the user to implement at this time.\n    if (event.type === 'keydown' || event.type === 'keyup') {\n      return event.keyCode;\n    }\n    return 0;\n  },\n  which: function (event) {\n    // `which` is an alias for either `keyCode` or `charCode` depending on the\n    // type of the event.\n    if (event.type === 'keypress') {\n      return getEventCharCode(event);\n    }\n    if (event.type === 'keydown' || event.type === 'keyup') {\n      return event.keyCode;\n    }\n    return 0;\n  }\n};\n\n/**\n * @param {object} dispatchConfig Configuration used to dispatch this event.\n * @param {string} dispatchMarker Marker identifying the event target.\n * @param {object} nativeEvent Native browser event.\n * @extends {SyntheticUIEvent}\n */\nfunction SyntheticKeyboardEvent(dispatchConfig, dispatchMarker, nativeEvent, nativeEventTarget) {\n  return SyntheticUIEvent.call(this, dispatchConfig, dispatchMarker, nativeEvent, nativeEventTarget);\n}\n\nSyntheticUIEvent.augmentClass(SyntheticKeyboardEvent, KeyboardEventInterface);\n\nmodule.exports = SyntheticKeyboardEvent;",
     {
-      "./getEventCharCode": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/getEventCharCode.js",
       "./SyntheticUIEvent": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/SyntheticUIEvent.js",
+      "./getEventCharCode": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/getEventCharCode.js",
       "./getEventModifierState": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/getEventModifierState.js",
       "./getEventKey": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/getEventKey.js"
     },
     {
       "id": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/SyntheticKeyboardEvent.js",
       "hash": "qHeQoA",
-      "browserifyId": 120,
+      "browserifyId": 128,
       "sourcemap": ""
     }
   ],
@@ -2182,20 +2277,20 @@
     {
       "id": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/SyntheticMouseEvent.js",
       "hash": "eUKMdw",
-      "browserifyId": 121,
+      "browserifyId": 129,
       "sourcemap": ""
     }
   ],
   "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/SyntheticTouchEvent.js": [
     "/**\n * Copyright 2013-present, Facebook, Inc.\n * All rights reserved.\n *\n * This source code is licensed under the BSD-style license found in the\n * LICENSE file in the root directory of this source tree. An additional grant\n * of patent rights can be found in the PATENTS file in the same directory.\n *\n */\n\n'use strict';\n\nvar SyntheticUIEvent = require('./SyntheticUIEvent');\n\nvar getEventModifierState = require('./getEventModifierState');\n\n/**\n * @interface TouchEvent\n * @see http://www.w3.org/TR/touch-events/\n */\nvar TouchEventInterface = {\n  touches: null,\n  targetTouches: null,\n  changedTouches: null,\n  altKey: null,\n  metaKey: null,\n  ctrlKey: null,\n  shiftKey: null,\n  getModifierState: getEventModifierState\n};\n\n/**\n * @param {object} dispatchConfig Configuration used to dispatch this event.\n * @param {string} dispatchMarker Marker identifying the event target.\n * @param {object} nativeEvent Native browser event.\n * @extends {SyntheticUIEvent}\n */\nfunction SyntheticTouchEvent(dispatchConfig, dispatchMarker, nativeEvent, nativeEventTarget) {\n  return SyntheticUIEvent.call(this, dispatchConfig, dispatchMarker, nativeEvent, nativeEventTarget);\n}\n\nSyntheticUIEvent.augmentClass(SyntheticTouchEvent, TouchEventInterface);\n\nmodule.exports = SyntheticTouchEvent;",
     {
-      "./SyntheticUIEvent": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/SyntheticUIEvent.js",
-      "./getEventModifierState": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/getEventModifierState.js"
+      "./getEventModifierState": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/getEventModifierState.js",
+      "./SyntheticUIEvent": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/SyntheticUIEvent.js"
     },
     {
       "id": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/SyntheticTouchEvent.js",
       "hash": "HEDrOQ",
-      "browserifyId": 122,
+      "browserifyId": 130,
       "sourcemap": ""
     }
   ],
@@ -2207,7 +2302,7 @@
     {
       "id": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/SyntheticTransitionEvent.js",
       "hash": "rlCGuw",
-      "browserifyId": 123,
+      "browserifyId": 131,
       "sourcemap": ""
     }
   ],
@@ -2220,7 +2315,7 @@
     {
       "id": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/SyntheticUIEvent.js",
       "hash": "xEcf5A",
-      "browserifyId": 124,
+      "browserifyId": 132,
       "sourcemap": ""
     }
   ],
@@ -2232,7 +2327,7 @@
     {
       "id": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/SyntheticWheelEvent.js",
       "hash": "jUATiw",
-      "browserifyId": 125,
+      "browserifyId": 133,
       "sourcemap": ""
     }
   ],
@@ -2246,7 +2341,7 @@
     {
       "id": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/Transaction.js",
       "hash": "frBhsw",
-      "browserifyId": 126,
+      "browserifyId": 134,
       "sourcemap": ""
     }
   ],
@@ -2256,7 +2351,7 @@
     {
       "id": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/ViewportMetrics.js",
       "hash": "fYLr1w",
-      "browserifyId": 127,
+      "browserifyId": 135,
       "sourcemap": ""
     }
   ],
@@ -2270,7 +2365,7 @@
     {
       "id": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/accumulateInto.js",
       "hash": "4MiWBw",
-      "browserifyId": 128,
+      "browserifyId": 136,
       "sourcemap": ""
     }
   ],
@@ -2280,7 +2375,7 @@
     {
       "id": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/adler32.js",
       "hash": "TL6u3g",
-      "browserifyId": 129,
+      "browserifyId": 137,
       "sourcemap": ""
     }
   ],
@@ -2292,13 +2387,13 @@
       "./ReactPropTypesSecret": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/ReactPropTypesSecret.js",
       "./ReactPropTypeLocationNames": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/ReactPropTypeLocationNames.js",
       "react/lib/ReactComponentTreeHook": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react/lib/ReactComponentTreeHook.js",
-      "fbjs/lib/warning": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/fbjs/lib/warning.js",
-      "fbjs/lib/invariant": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/fbjs/lib/invariant.js"
+      "fbjs/lib/invariant": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/fbjs/lib/invariant.js",
+      "fbjs/lib/warning": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/fbjs/lib/warning.js"
     },
     {
       "id": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/checkReactTypeSpec.js",
       "hash": "ADVyqQ",
-      "browserifyId": 130,
+      "browserifyId": 138,
       "sourcemap": ""
     }
   ],
@@ -2308,7 +2403,7 @@
     {
       "id": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/createMicrosoftUnsafeLocalFunction.js",
       "hash": "PxSScg",
-      "browserifyId": 131,
+      "browserifyId": 139,
       "sourcemap": ""
     }
   ],
@@ -2322,7 +2417,7 @@
     {
       "id": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/dangerousStyleValue.js",
       "hash": "4YhBRg",
-      "browserifyId": 132,
+      "browserifyId": 140,
       "sourcemap": ""
     }
   ],
@@ -2332,7 +2427,7 @@
     {
       "id": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/escapeTextContentForBrowser.js",
       "hash": "Vw3UnQ",
-      "browserifyId": 133,
+      "browserifyId": 141,
       "sourcemap": ""
     }
   ],
@@ -2351,7 +2446,7 @@
     {
       "id": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/findDOMNode.js",
       "hash": "mYQTtw",
-      "browserifyId": 134,
+      "browserifyId": 142,
       "sourcemap": ""
     }
   ],
@@ -2367,7 +2462,7 @@
     {
       "id": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/flattenChildren.js",
       "hash": "HoBXHQ",
-      "browserifyId": 135,
+      "browserifyId": 143,
       "sourcemap": ""
     }
   ],
@@ -2377,7 +2472,7 @@
     {
       "id": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/forEachAccumulated.js",
       "hash": "T1GtaA",
-      "browserifyId": 136,
+      "browserifyId": 144,
       "sourcemap": ""
     }
   ],
@@ -2387,7 +2482,7 @@
     {
       "id": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/getEventCharCode.js",
       "hash": "bfE+IA",
-      "browserifyId": 137,
+      "browserifyId": 145,
       "sourcemap": ""
     }
   ],
@@ -2399,7 +2494,7 @@
     {
       "id": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/getEventKey.js",
       "hash": "mUKpoQ",
-      "browserifyId": 138,
+      "browserifyId": 146,
       "sourcemap": ""
     }
   ],
@@ -2409,7 +2504,7 @@
     {
       "id": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/getEventModifierState.js",
       "hash": "xrOATA",
-      "browserifyId": 139,
+      "browserifyId": 147,
       "sourcemap": ""
     }
   ],
@@ -2419,7 +2514,7 @@
     {
       "id": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/getEventTarget.js",
       "hash": "odBlBw",
-      "browserifyId": 140,
+      "browserifyId": 148,
       "sourcemap": ""
     }
   ],
@@ -2431,7 +2526,7 @@
     {
       "id": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/getHostComponentFromComposite.js",
       "hash": "pQmX3A",
-      "browserifyId": 141,
+      "browserifyId": 149,
       "sourcemap": ""
     }
   ],
@@ -2441,7 +2536,7 @@
     {
       "id": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/getIteratorFn.js",
       "hash": "/ay+CQ",
-      "browserifyId": 142,
+      "browserifyId": 150,
       "sourcemap": ""
     }
   ],
@@ -2451,7 +2546,7 @@
     {
       "id": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/getNodeForCharacterOffset.js",
       "hash": "o3JMQQ",
-      "browserifyId": 143,
+      "browserifyId": 151,
       "sourcemap": ""
     }
   ],
@@ -2463,7 +2558,7 @@
     {
       "id": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/getTextContentAccessor.js",
       "hash": "hnVjUg",
-      "browserifyId": 144,
+      "browserifyId": 152,
       "sourcemap": ""
     }
   ],
@@ -2475,7 +2570,7 @@
     {
       "id": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/getVendorPrefixedEventName.js",
       "hash": "DX8nEQ",
-      "browserifyId": 145,
+      "browserifyId": 153,
       "sourcemap": ""
     }
   ],
@@ -2487,7 +2582,7 @@
     {
       "id": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/inputValueTracking.js",
       "hash": "HtTYqg",
-      "browserifyId": 146,
+      "browserifyId": 154,
       "sourcemap": ""
     }
   ],
@@ -2499,15 +2594,15 @@
       "./ReactEmptyComponent": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/ReactEmptyComponent.js",
       "object-assign": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/object-assign/index.js",
       "react/lib/getNextDebugID": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react/lib/getNextDebugID.js",
-      "fbjs/lib/invariant": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/fbjs/lib/invariant.js",
       "fbjs/lib/warning": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/fbjs/lib/warning.js",
+      "fbjs/lib/invariant": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/fbjs/lib/invariant.js",
       "./ReactHostComponent": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/ReactHostComponent.js",
       "./ReactCompositeComponent": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/ReactCompositeComponent.js"
     },
     {
       "id": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/instantiateReactComponent.js",
       "hash": "0bH8jQ",
-      "browserifyId": 147,
+      "browserifyId": 155,
       "sourcemap": ""
     }
   ],
@@ -2519,7 +2614,7 @@
     {
       "id": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/isEventSupported.js",
       "hash": "07Tzhw",
-      "browserifyId": 148,
+      "browserifyId": 156,
       "sourcemap": ""
     }
   ],
@@ -2529,7 +2624,7 @@
     {
       "id": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/isTextInputElement.js",
       "hash": "fxTzew",
-      "browserifyId": 149,
+      "browserifyId": 157,
       "sourcemap": ""
     }
   ],
@@ -2541,7 +2636,7 @@
     {
       "id": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/quoteAttributeValueForBrowser.js",
       "hash": "SYHflg",
-      "browserifyId": 150,
+      "browserifyId": 158,
       "sourcemap": ""
     }
   ],
@@ -2551,7 +2646,7 @@
     {
       "id": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/reactProdInvariant.js",
       "hash": "r7pUJg",
-      "browserifyId": 151,
+      "browserifyId": 159,
       "sourcemap": ""
     }
   ],
@@ -2563,7 +2658,7 @@
     {
       "id": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/renderSubtreeIntoContainer.js",
       "hash": "yCHe5g",
-      "browserifyId": 152,
+      "browserifyId": 160,
       "sourcemap": ""
     }
   ],
@@ -2577,7 +2672,7 @@
     {
       "id": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/setInnerHTML.js",
       "hash": "RAwSCQ",
-      "browserifyId": 153,
+      "browserifyId": 161,
       "sourcemap": ""
     }
   ],
@@ -2591,7 +2686,7 @@
     {
       "id": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/setTextContent.js",
       "hash": "S0rEYA",
-      "browserifyId": 154,
+      "browserifyId": 162,
       "sourcemap": ""
     }
   ],
@@ -2601,7 +2696,7 @@
     {
       "id": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/shouldUpdateReactComponent.js",
       "hash": "poHS8w",
-      "browserifyId": 155,
+      "browserifyId": 163,
       "sourcemap": ""
     }
   ],
@@ -2611,8 +2706,8 @@
       "_process": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/process/browser.js",
       "./reactProdInvariant": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/reactProdInvariant.js",
       "./KeyEscapeUtils": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/KeyEscapeUtils.js",
-      "./ReactElementSymbol": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/ReactElementSymbol.js",
       "./getIteratorFn": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/getIteratorFn.js",
+      "./ReactElementSymbol": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/ReactElementSymbol.js",
       "react/lib/ReactCurrentOwner": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react/lib/ReactCurrentOwner.js",
       "fbjs/lib/invariant": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/fbjs/lib/invariant.js",
       "fbjs/lib/warning": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/fbjs/lib/warning.js"
@@ -2620,7 +2715,7 @@
     {
       "id": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/traverseAllChildren.js",
       "hash": "08uvlA",
-      "browserifyId": 156,
+      "browserifyId": 164,
       "sourcemap": ""
     }
   ],
@@ -2635,7 +2730,23 @@
     {
       "id": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/lib/validateDOMNesting.js",
       "hash": "7HE33w",
-      "browserifyId": 157,
+      "browserifyId": 165,
+      "sourcemap": ""
+    }
+  ],
+  "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-gravatar/dist/index.js": [
+    "'use strict';\n\nvar _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };\n\nvar _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if (\"value\" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();\n\nvar _react = require('react');\n\nvar _react2 = _interopRequireDefault(_react);\n\nvar _md = require('md5');\n\nvar _md2 = _interopRequireDefault(_md);\n\nvar _queryString = require('query-string');\n\nvar _queryString2 = _interopRequireDefault(_queryString);\n\nvar _isRetina = require('is-retina');\n\nvar _isRetina2 = _interopRequireDefault(_isRetina);\n\nvar _propTypes = require('prop-types');\n\nvar _propTypes2 = _interopRequireDefault(_propTypes);\n\nfunction _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }\n\nfunction _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }\n\nfunction _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError(\"Cannot call a class as a function\"); } }\n\nfunction _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError(\"this hasn't been initialised - super() hasn't been called\"); } return call && (typeof call === \"object\" || typeof call === \"function\") ? call : self; }\n\nfunction _inherits(subClass, superClass) { if (typeof superClass !== \"function\" && superClass !== null) { throw new TypeError(\"Super expression must either be null or a function, not \" + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }\n\nvar Gravatar = function (_React$Component) {\n  _inherits(Gravatar, _React$Component);\n\n  function Gravatar() {\n    _classCallCheck(this, Gravatar);\n\n    return _possibleConstructorReturn(this, (Gravatar.__proto__ || Object.getPrototypeOf(Gravatar)).apply(this, arguments));\n  }\n\n  _createClass(Gravatar, [{\n    key: 'render',\n    value: function render() {\n      var base = this.props.protocol + 'www.gravatar.com/avatar/';\n\n      var query = _queryString2.default.stringify({\n        s: this.props.size,\n        r: this.props.rating,\n        d: this.props.default\n      });\n\n      var retinaQuery = _queryString2.default.stringify({\n        s: this.props.size * 2,\n        r: this.props.rating,\n        d: this.props.default\n      });\n\n      // Gravatar service currently trims and lowercases all registered emails\n      var formattedEmail = ('' + this.props.email).trim().toLowerCase();\n\n      var hash = void 0;\n      if (this.props.md5) {\n        hash = this.props.md5;\n      } else if (typeof this.props.email === 'string') {\n        hash = (0, _md2.default)(formattedEmail, { encoding: \"binary\" });\n      } else {\n        console.warn('Gravatar image can not be fetched. Either the \"email\" or \"md5\" prop must be specified.');\n        return _react2.default.createElement('script', null);\n      }\n\n      var src = '' + base + hash + '?' + query;\n      var retinaSrc = '' + base + hash + '?' + retinaQuery;\n\n      var modernBrowser = true; // server-side, we render for modern browsers\n\n      if (typeof window !== 'undefined') {\n        // this is not NodeJS\n        modernBrowser = 'srcset' in document.createElement('img');\n      }\n\n      var className = 'react-gravatar';\n      if (this.props.className) {\n        className = className + ' ' + this.props.className;\n      }\n\n      // Clone this.props and then delete Component specific props so we can\n      // spread the rest into the img.\n\n      var rest = _objectWithoutProperties(this.props, []);\n\n      delete rest.md5;\n      delete rest.email;\n      delete rest.protocol;\n      delete rest.rating;\n      delete rest.size;\n      delete rest.style;\n      delete rest.className;\n      delete rest.default;\n      if (!modernBrowser && (0, _isRetina2.default)()) {\n        return _react2.default.createElement('img', _extends({\n          alt: 'Gravatar for ' + formattedEmail,\n          style: this.props.style,\n          src: retinaSrc,\n          height: this.props.size,\n          width: this.props.size\n        }, rest, {\n          className: className\n        }));\n      }\n      return _react2.default.createElement('img', _extends({\n        alt: 'Gravatar for ' + formattedEmail,\n        style: this.props.style,\n        src: src,\n        srcSet: retinaSrc + ' 2x',\n        height: this.props.size,\n        width: this.props.size\n      }, rest, {\n        className: className\n      }));\n    }\n  }]);\n\n  return Gravatar;\n}(_react2.default.Component);\n\nGravatar.displayName = 'Gravatar';\nGravatar.propTypes = {\n  email: _propTypes2.default.string,\n  md5: _propTypes2.default.string,\n  size: _propTypes2.default.number,\n  rating: _propTypes2.default.string,\n  default: _propTypes2.default.string,\n  className: _propTypes2.default.string,\n  protocol: _propTypes2.default.string,\n  style: _propTypes2.default.object\n};\nGravatar.defaultProps = {\n  size: 50,\n  rating: 'g',\n  default: 'retro',\n  protocol: '//'\n};\n\n\nmodule.exports = Gravatar;",
+    {
+      "react": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react/react.js",
+      "is-retina": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/is-retina/index.js",
+      "md5": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/md5/md5.js",
+      "query-string": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/query-string/index.js",
+      "prop-types": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/prop-types/index.js"
+    },
+    {
+      "id": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-gravatar/dist/index.js",
+      "hash": "GCQEuw",
+      "browserifyId": 166,
       "sourcemap": ""
     }
   ],
@@ -2647,7 +2758,7 @@
     {
       "id": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react/lib/KeyEscapeUtils.js",
       "hash": "NpDiXw",
-      "browserifyId": 158,
+      "browserifyId": 167,
       "sourcemap": ""
     }
   ],
@@ -2662,7 +2773,7 @@
     {
       "id": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react/lib/PooledClass.js",
       "hash": "7IZcyQ",
-      "browserifyId": 159,
+      "browserifyId": 168,
       "sourcemap": ""
     }
   ],
@@ -2672,21 +2783,21 @@
       "_process": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/process/browser.js",
       "./ReactVersion": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react/lib/ReactVersion.js",
       "object-assign": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/object-assign/index.js",
-      "./canDefineProperty": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react/lib/canDefineProperty.js",
       "./lowPriorityWarning": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react/lib/lowPriorityWarning.js",
+      "./canDefineProperty": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react/lib/canDefineProperty.js",
       "./ReactDOMFactories": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react/lib/ReactDOMFactories.js",
       "./onlyChild": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react/lib/onlyChild.js",
       "./ReactElement": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react/lib/ReactElement.js",
       "./ReactBaseClasses": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react/lib/ReactBaseClasses.js",
       "./ReactChildren": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react/lib/ReactChildren.js",
-      "./ReactElementValidator": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react/lib/ReactElementValidator.js",
       "./createClass": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react/lib/createClass.js",
+      "./ReactElementValidator": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react/lib/ReactElementValidator.js",
       "./ReactPropTypes": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react/lib/ReactPropTypes.js"
     },
     {
       "id": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react/lib/React.js",
       "hash": "3tWg3w",
-      "browserifyId": 160,
+      "browserifyId": 169,
       "sourcemap": ""
     }
   ],
@@ -2698,14 +2809,14 @@
       "./lowPriorityWarning": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react/lib/lowPriorityWarning.js",
       "object-assign": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/object-assign/index.js",
       "./reactProdInvariant": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react/lib/reactProdInvariant.js",
-      "fbjs/lib/emptyObject": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/fbjs/lib/emptyObject.js",
       "fbjs/lib/invariant": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/fbjs/lib/invariant.js",
+      "fbjs/lib/emptyObject": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/fbjs/lib/emptyObject.js",
       "./ReactNoopUpdateQueue": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react/lib/ReactNoopUpdateQueue.js"
     },
     {
       "id": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react/lib/ReactBaseClasses.js",
       "hash": "8DFC3g",
-      "browserifyId": 161,
+      "browserifyId": 170,
       "sourcemap": ""
     }
   ],
@@ -2720,7 +2831,7 @@
     {
       "id": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react/lib/ReactChildren.js",
       "hash": "M5S5Rg",
-      "browserifyId": 162,
+      "browserifyId": 171,
       "sourcemap": ""
     }
   ],
@@ -2736,7 +2847,7 @@
     {
       "id": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react/lib/ReactComponentTreeHook.js",
       "hash": "6r2ZRw",
-      "browserifyId": 163,
+      "browserifyId": 172,
       "sourcemap": ""
     }
   ],
@@ -2746,7 +2857,7 @@
     {
       "id": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react/lib/ReactCurrentOwner.js",
       "hash": "ks3Dag",
-      "browserifyId": 164,
+      "browserifyId": 173,
       "sourcemap": ""
     }
   ],
@@ -2760,7 +2871,7 @@
     {
       "id": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react/lib/ReactDOMFactories.js",
       "hash": "eFxYPg",
-      "browserifyId": 165,
+      "browserifyId": 174,
       "sourcemap": ""
     }
   ],
@@ -2777,7 +2888,7 @@
     {
       "id": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react/lib/ReactElement.js",
       "hash": "tdTQ8A",
-      "browserifyId": 166,
+      "browserifyId": 175,
       "sourcemap": ""
     }
   ],
@@ -2789,7 +2900,7 @@
     {
       "id": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react/lib/ReactElementSymbol.js",
       "hash": "Hexqyw",
-      "browserifyId": 167,
+      "browserifyId": 176,
       "sourcemap": ""
     }
   ],
@@ -2797,19 +2908,19 @@
     "(function (process){\n/**\n * Copyright 2014-present, Facebook, Inc.\n * All rights reserved.\n *\n * This source code is licensed under the BSD-style license found in the\n * LICENSE file in the root directory of this source tree. An additional grant\n * of patent rights can be found in the PATENTS file in the same directory.\n *\n */\n\n/**\n * ReactElementValidator provides a wrapper around a element factory\n * which validates the props passed to the element. This is intended to be\n * used only in DEV and could be replaced by a static type checker for languages\n * that support it.\n */\n\n'use strict';\n\nvar ReactCurrentOwner = require('./ReactCurrentOwner');\nvar ReactComponentTreeHook = require('./ReactComponentTreeHook');\nvar ReactElement = require('./ReactElement');\n\nvar checkReactTypeSpec = require('./checkReactTypeSpec');\n\nvar canDefineProperty = require('./canDefineProperty');\nvar getIteratorFn = require('./getIteratorFn');\nvar warning = require('fbjs/lib/warning');\nvar lowPriorityWarning = require('./lowPriorityWarning');\n\nfunction getDeclarationErrorAddendum() {\n  if (ReactCurrentOwner.current) {\n    var name = ReactCurrentOwner.current.getName();\n    if (name) {\n      return ' Check the render method of `' + name + '`.';\n    }\n  }\n  return '';\n}\n\nfunction getSourceInfoErrorAddendum(elementProps) {\n  if (elementProps !== null && elementProps !== undefined && elementProps.__source !== undefined) {\n    var source = elementProps.__source;\n    var fileName = source.fileName.replace(/^.*[\\\\\\/]/, '');\n    var lineNumber = source.lineNumber;\n    return ' Check your code at ' + fileName + ':' + lineNumber + '.';\n  }\n  return '';\n}\n\n/**\n * Warn if there's no key explicitly set on dynamic arrays of children or\n * object keys are not valid. This allows us to keep track of children between\n * updates.\n */\nvar ownerHasKeyUseWarning = {};\n\nfunction getCurrentComponentErrorInfo(parentType) {\n  var info = getDeclarationErrorAddendum();\n\n  if (!info) {\n    var parentName = typeof parentType === 'string' ? parentType : parentType.displayName || parentType.name;\n    if (parentName) {\n      info = ' Check the top-level render call using <' + parentName + '>.';\n    }\n  }\n  return info;\n}\n\n/**\n * Warn if the element doesn't have an explicit key assigned to it.\n * This element is in an array. The array could grow and shrink or be\n * reordered. All children that haven't already been validated are required to\n * have a \"key\" property assigned to it. Error statuses are cached so a warning\n * will only be shown once.\n *\n * @internal\n * @param {ReactElement} element Element that requires a key.\n * @param {*} parentType element's parent's type.\n */\nfunction validateExplicitKey(element, parentType) {\n  if (!element._store || element._store.validated || element.key != null) {\n    return;\n  }\n  element._store.validated = true;\n\n  var memoizer = ownerHasKeyUseWarning.uniqueKey || (ownerHasKeyUseWarning.uniqueKey = {});\n\n  var currentComponentErrorInfo = getCurrentComponentErrorInfo(parentType);\n  if (memoizer[currentComponentErrorInfo]) {\n    return;\n  }\n  memoizer[currentComponentErrorInfo] = true;\n\n  // Usually the current owner is the offender, but if it accepts children as a\n  // property, it may be the creator of the child that's responsible for\n  // assigning it a key.\n  var childOwner = '';\n  if (element && element._owner && element._owner !== ReactCurrentOwner.current) {\n    // Give the component that originally created this child.\n    childOwner = ' It was passed a child from ' + element._owner.getName() + '.';\n  }\n\n  process.env.NODE_ENV !== 'production' ? warning(false, 'Each child in an array or iterator should have a unique \"key\" prop.' + '%s%s See https://fb.me/react-warning-keys for more information.%s', currentComponentErrorInfo, childOwner, ReactComponentTreeHook.getCurrentStackAddendum(element)) : void 0;\n}\n\n/**\n * Ensure that every element either is passed in a static location, in an\n * array with an explicit keys property defined, or in an object literal\n * with valid key property.\n *\n * @internal\n * @param {ReactNode} node Statically passed child of any type.\n * @param {*} parentType node's parent's type.\n */\nfunction validateChildKeys(node, parentType) {\n  if (typeof node !== 'object') {\n    return;\n  }\n  if (Array.isArray(node)) {\n    for (var i = 0; i < node.length; i++) {\n      var child = node[i];\n      if (ReactElement.isValidElement(child)) {\n        validateExplicitKey(child, parentType);\n      }\n    }\n  } else if (ReactElement.isValidElement(node)) {\n    // This element was passed in a valid location.\n    if (node._store) {\n      node._store.validated = true;\n    }\n  } else if (node) {\n    var iteratorFn = getIteratorFn(node);\n    // Entry iterators provide implicit keys.\n    if (iteratorFn) {\n      if (iteratorFn !== node.entries) {\n        var iterator = iteratorFn.call(node);\n        var step;\n        while (!(step = iterator.next()).done) {\n          if (ReactElement.isValidElement(step.value)) {\n            validateExplicitKey(step.value, parentType);\n          }\n        }\n      }\n    }\n  }\n}\n\n/**\n * Given an element, validate that its props follow the propTypes definition,\n * provided by the type.\n *\n * @param {ReactElement} element\n */\nfunction validatePropTypes(element) {\n  var componentClass = element.type;\n  if (typeof componentClass !== 'function') {\n    return;\n  }\n  var name = componentClass.displayName || componentClass.name;\n  if (componentClass.propTypes) {\n    checkReactTypeSpec(componentClass.propTypes, element.props, 'prop', name, element, null);\n  }\n  if (typeof componentClass.getDefaultProps === 'function') {\n    process.env.NODE_ENV !== 'production' ? warning(componentClass.getDefaultProps.isReactClassApproved, 'getDefaultProps is only used on classic React.createClass ' + 'definitions. Use a static property named `defaultProps` instead.') : void 0;\n  }\n}\n\nvar ReactElementValidator = {\n  createElement: function (type, props, children) {\n    var validType = typeof type === 'string' || typeof type === 'function';\n    // We warn in this case but don't throw. We expect the element creation to\n    // succeed and there will likely be errors in render.\n    if (!validType) {\n      if (typeof type !== 'function' && typeof type !== 'string') {\n        var info = '';\n        if (type === undefined || typeof type === 'object' && type !== null && Object.keys(type).length === 0) {\n          info += ' You likely forgot to export your component from the file ' + \"it's defined in.\";\n        }\n\n        var sourceInfo = getSourceInfoErrorAddendum(props);\n        if (sourceInfo) {\n          info += sourceInfo;\n        } else {\n          info += getDeclarationErrorAddendum();\n        }\n\n        info += ReactComponentTreeHook.getCurrentStackAddendum();\n\n        var currentSource = props !== null && props !== undefined && props.__source !== undefined ? props.__source : null;\n        ReactComponentTreeHook.pushNonStandardWarningStack(true, currentSource);\n        process.env.NODE_ENV !== 'production' ? warning(false, 'React.createElement: type is invalid -- expected a string (for ' + 'built-in components) or a class/function (for composite ' + 'components) but got: %s.%s', type == null ? type : typeof type, info) : void 0;\n        ReactComponentTreeHook.popNonStandardWarningStack();\n      }\n    }\n\n    var element = ReactElement.createElement.apply(this, arguments);\n\n    // The result can be nullish if a mock or a custom function is used.\n    // TODO: Drop this when these are no longer allowed as the type argument.\n    if (element == null) {\n      return element;\n    }\n\n    // Skip key warning if the type isn't valid since our key validation logic\n    // doesn't expect a non-string/function type and can throw confusing errors.\n    // We don't want exception behavior to differ between dev and prod.\n    // (Rendering will throw with a helpful message and as soon as the type is\n    // fixed, the key warnings will appear.)\n    if (validType) {\n      for (var i = 2; i < arguments.length; i++) {\n        validateChildKeys(arguments[i], type);\n      }\n    }\n\n    validatePropTypes(element);\n\n    return element;\n  },\n\n  createFactory: function (type) {\n    var validatedFactory = ReactElementValidator.createElement.bind(null, type);\n    // Legacy hook TODO: Warn if this is accessed\n    validatedFactory.type = type;\n\n    if (process.env.NODE_ENV !== 'production') {\n      if (canDefineProperty) {\n        Object.defineProperty(validatedFactory, 'type', {\n          enumerable: false,\n          get: function () {\n            lowPriorityWarning(false, 'Factory.type is deprecated. Access the class directly ' + 'before passing it to createFactory.');\n            Object.defineProperty(this, 'type', {\n              value: type\n            });\n            return type;\n          }\n        });\n      }\n    }\n\n    return validatedFactory;\n  },\n\n  cloneElement: function (element, props, children) {\n    var newElement = ReactElement.cloneElement.apply(this, arguments);\n    for (var i = 2; i < arguments.length; i++) {\n      validateChildKeys(arguments[i], newElement.type);\n    }\n    validatePropTypes(newElement);\n    return newElement;\n  }\n};\n\nmodule.exports = ReactElementValidator;\n}).call(this,require('_process'))",
     {
       "_process": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/process/browser.js",
-      "./ReactCurrentOwner": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react/lib/ReactCurrentOwner.js",
       "./ReactElement": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react/lib/ReactElement.js",
+      "./ReactCurrentOwner": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react/lib/ReactCurrentOwner.js",
       "./canDefineProperty": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react/lib/canDefineProperty.js",
       "./lowPriorityWarning": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react/lib/lowPriorityWarning.js",
       "./getIteratorFn": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react/lib/getIteratorFn.js",
-      "./ReactComponentTreeHook": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react/lib/ReactComponentTreeHook.js",
       "fbjs/lib/warning": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/fbjs/lib/warning.js",
+      "./ReactComponentTreeHook": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react/lib/ReactComponentTreeHook.js",
       "./checkReactTypeSpec": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react/lib/checkReactTypeSpec.js"
     },
     {
       "id": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react/lib/ReactElementValidator.js",
       "hash": "Ox1K6A",
-      "browserifyId": 168,
+      "browserifyId": 177,
       "sourcemap": ""
     }
   ],
@@ -2822,7 +2933,7 @@
     {
       "id": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react/lib/ReactNoopUpdateQueue.js",
       "hash": "Pf59Xg",
-      "browserifyId": 169,
+      "browserifyId": 178,
       "sourcemap": ""
     }
   ],
@@ -2835,7 +2946,7 @@
     {
       "id": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react/lib/ReactPropTypeLocationNames.js",
       "hash": "gZ6r3g",
-      "browserifyId": 170,
+      "browserifyId": 179,
       "sourcemap": ""
     }
   ],
@@ -2848,7 +2959,7 @@
     {
       "id": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react/lib/ReactPropTypes.js",
       "hash": "OVGoQg",
-      "browserifyId": 171,
+      "browserifyId": 180,
       "sourcemap": ""
     }
   ],
@@ -2860,7 +2971,7 @@
     {
       "id": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react/lib/ReactPropTypesSecret.js",
       "hash": "luz2vg",
-      "browserifyId": 172,
+      "browserifyId": 181,
       "sourcemap": ""
     }
   ],
@@ -2872,7 +2983,7 @@
     {
       "id": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react/lib/ReactVersion.js",
       "hash": "VM3eWg",
-      "browserifyId": 173,
+      "browserifyId": 182,
       "sourcemap": ""
     }
   ],
@@ -2884,7 +2995,7 @@
     {
       "id": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react/lib/canDefineProperty.js",
       "hash": "XIL2Gg",
-      "browserifyId": 174,
+      "browserifyId": 183,
       "sourcemap": ""
     }
   ],
@@ -2896,13 +3007,13 @@
       "./ReactComponentTreeHook": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react/lib/ReactComponentTreeHook.js",
       "./ReactPropTypesSecret": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react/lib/ReactPropTypesSecret.js",
       "./ReactPropTypeLocationNames": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react/lib/ReactPropTypeLocationNames.js",
-      "fbjs/lib/invariant": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/fbjs/lib/invariant.js",
-      "fbjs/lib/warning": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/fbjs/lib/warning.js"
+      "fbjs/lib/warning": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/fbjs/lib/warning.js",
+      "fbjs/lib/invariant": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/fbjs/lib/invariant.js"
     },
     {
       "id": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react/lib/checkReactTypeSpec.js",
       "hash": "3/QwRg",
-      "browserifyId": 175,
+      "browserifyId": 184,
       "sourcemap": ""
     }
   ],
@@ -2917,7 +3028,7 @@
     {
       "id": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react/lib/createClass.js",
       "hash": "qaH2vQ",
-      "browserifyId": 176,
+      "browserifyId": 185,
       "sourcemap": ""
     }
   ],
@@ -2929,7 +3040,7 @@
     {
       "id": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react/lib/getIteratorFn.js",
       "hash": "HqZqsg",
-      "browserifyId": 177,
+      "browserifyId": 186,
       "sourcemap": ""
     }
   ],
@@ -2939,7 +3050,7 @@
     {
       "id": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react/lib/getNextDebugID.js",
       "hash": "dwHOCg",
-      "browserifyId": 178,
+      "browserifyId": 187,
       "sourcemap": ""
     }
   ],
@@ -2951,7 +3062,7 @@
     {
       "id": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react/lib/lowPriorityWarning.js",
       "hash": "3nTuOA",
-      "browserifyId": 179,
+      "browserifyId": 188,
       "sourcemap": ""
     }
   ],
@@ -2966,7 +3077,7 @@
     {
       "id": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react/lib/onlyChild.js",
       "hash": "CROVAw",
-      "browserifyId": 180,
+      "browserifyId": 189,
       "sourcemap": ""
     }
   ],
@@ -2978,7 +3089,7 @@
     {
       "id": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react/lib/reactProdInvariant.js",
       "hash": "BcamvA",
-      "browserifyId": 181,
+      "browserifyId": 190,
       "sourcemap": ""
     }
   ],
@@ -2991,13 +3102,13 @@
       "./ReactElementSymbol": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react/lib/ReactElementSymbol.js",
       "./getIteratorFn": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react/lib/getIteratorFn.js",
       "./KeyEscapeUtils": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react/lib/KeyEscapeUtils.js",
-      "fbjs/lib/warning": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/fbjs/lib/warning.js",
-      "fbjs/lib/invariant": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/fbjs/lib/invariant.js"
+      "fbjs/lib/invariant": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/fbjs/lib/invariant.js",
+      "fbjs/lib/warning": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/fbjs/lib/warning.js"
     },
     {
       "id": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react/lib/traverseAllChildren.js",
       "hash": "0F5sIA",
-      "browserifyId": 182,
+      "browserifyId": 191,
       "sourcemap": ""
     }
   ],
@@ -3009,21 +3120,123 @@
     {
       "id": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react/react.js",
       "hash": "rJg7VQ",
-      "browserifyId": 183,
+      "browserifyId": 192,
+      "sourcemap": ""
+    }
+  ],
+  "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/strict-uri-encode/index.js": [
+    "'use strict';\nmodule.exports = function (str) {\n\treturn encodeURIComponent(str).replace(/[!'()*]/g, function (c) {\n\t\treturn '%' + c.charCodeAt(0).toString(16).toUpperCase();\n\t});\n};\n",
+    {},
+    {
+      "id": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/strict-uri-encode/index.js",
+      "hash": "q/bltA",
+      "browserifyId": 193,
       "sourcemap": ""
     }
   ],
   "/Users/nipunkanade/development/chat-app/chat-su-zette/source/app.js": [
-    "'use strict';\n\nvar React = require('react');\nvar ReactDOM = require('react-dom');\n\nvar Hello = React.createClass({\n    displayName: 'Hello',\n\n    render: function render() {\n        var hello = \"hello\";\n        console.log(hello);\n        hello = \"world\";\n        console.log(hello);\n        return React.createElement(\n            'div',\n            null,\n            'Hello ',\n            this.props.name\n        );\n    }\n});\n\nReactDOM.render(React.createElement(Hello, { name: 'World' }), document.getElementById('react-container'));\n",
+    "'use strict';\n\nvar _react = require('react');\n\nvar _react2 = _interopRequireDefault(_react);\n\nvar _reactDom = require('react-dom');\n\nvar _reactDom2 = _interopRequireDefault(_reactDom);\n\nvar _navbar = require('./navbar.js');\n\nvar _maindiv = require('./maindiv.js');\n\nfunction _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }\n\nvar ChatSuzette = _react2.default.createClass({\n    displayName: 'ChatSuzette',\n\n    render: function render() {\n        return _react2.default.createElement(\n            'div',\n            null,\n            _react2.default.createElement(_navbar.NavBar, null),\n            _react2.default.createElement(_maindiv.MainDiv, null)\n        );\n    }\n});\n\n_reactDom2.default.render(_react2.default.createElement(ChatSuzette, null), document.getElementById('react-container'));\n",
     {
+      "react": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react/react.js",
+      "./navbar.js": "/Users/nipunkanade/development/chat-app/chat-su-zette/source/navbar.js",
       "react-dom": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-dom/index.js",
-      "react": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react/react.js"
+      "./maindiv.js": "/Users/nipunkanade/development/chat-app/chat-su-zette/source/maindiv.js"
     },
     {
       "id": "/Users/nipunkanade/development/chat-app/chat-su-zette/source/app.js",
-      "hash": "FAlybg",
-      "browserifyId": 184,
-      "sourcemap": "//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbImFwcC5qcz92ZXJzaW9uPUZBbHliZyJdLCJuYW1lcyI6WyJSZWFjdCIsInJlcXVpcmUiLCJSZWFjdERPTSIsIkhlbGxvIiwiY3JlYXRlQ2xhc3MiLCJyZW5kZXIiLCJoZWxsbyIsImNvbnNvbGUiLCJsb2ciLCJwcm9wcyIsIm5hbWUiLCJkb2N1bWVudCIsImdldEVsZW1lbnRCeUlkIl0sIm1hcHBpbmdzIjoiOzs7QUFBQSxJQUFJQSxRQUFRQyxRQUFRLE9BQVIsQ0FBWjtBQUNBLElBQUlDLFdBQVdELFFBQVEsV0FBUixDQUFmOztBQUVBLElBQUlFLFFBQVFILE1BQU1JLFdBQU4sQ0FBa0I7QUFBQTs7QUFDMUJDLFlBQVEsa0JBQVk7QUFDaEIsWUFBSUMsUUFBTSxPQUFWO0FBQ0FDLGdCQUFRQyxHQUFSLENBQVlGLEtBQVo7QUFDQUEsZ0JBQU0sT0FBTjtBQUNBQyxnQkFBUUMsR0FBUixDQUFZRixLQUFaO0FBQ0EsZUFBTztBQUFBO0FBQUE7QUFBQTtBQUFZLGlCQUFLRyxLQUFMLENBQVdDO0FBQXZCLFNBQVA7QUFDSDtBQVB5QixDQUFsQixDQUFaOztBQVVBUixTQUFTRyxNQUFULENBQ0ksb0JBQUMsS0FBRCxJQUFPLE1BQUssT0FBWixHQURKLEVBRUlNLFNBQVNDLGNBQVQsQ0FBd0IsaUJBQXhCLENBRkoiLCJmaWxlIjoiYXBwLmpzIiwic291cmNlc0NvbnRlbnQiOlsidmFyIFJlYWN0ID0gcmVxdWlyZSgncmVhY3QnKTtcbnZhciBSZWFjdERPTSA9IHJlcXVpcmUoJ3JlYWN0LWRvbScpO1xuXG52YXIgSGVsbG8gPSBSZWFjdC5jcmVhdGVDbGFzcyh7XG4gICAgcmVuZGVyOiBmdW5jdGlvbiAoKSB7XG4gICAgICAgIGxldCBoZWxsbz1cImhlbGxvXCI7XG4gICAgICAgIGNvbnNvbGUubG9nKGhlbGxvKTtcbiAgICAgICAgaGVsbG89XCJ3b3JsZFwiO1xuICAgICAgICBjb25zb2xlLmxvZyhoZWxsbyk7XG4gICAgICAgIHJldHVybiA8ZGl2PkhlbGxvIHt0aGlzLnByb3BzLm5hbWV9PC9kaXY+O1xuICAgIH1cbn0pO1xuXG5SZWFjdERPTS5yZW5kZXIoXG4gICAgPEhlbGxvIG5hbWU9XCJXb3JsZFwiIC8+LFxuICAgIGRvY3VtZW50LmdldEVsZW1lbnRCeUlkKCdyZWFjdC1jb250YWluZXInKVxuKTtcbiJdfQ=="
+      "hash": "vuL+mw",
+      "browserifyId": 194,
+      "sourcemap": "//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbImFwcC5qcz92ZXJzaW9uPXZ1TCttdyJdLCJuYW1lcyI6WyJDaGF0U3V6ZXR0ZSIsImNyZWF0ZUNsYXNzIiwicmVuZGVyIiwiZG9jdW1lbnQiLCJnZXRFbGVtZW50QnlJZCJdLCJtYXBwaW5ncyI6Ijs7O0FBQUE7Ozs7QUFDQTs7OztBQUVBOztBQUNBOzs7O0FBR0EsSUFBSUEsY0FBYyxnQkFBTUMsV0FBTixDQUFrQjtBQUFBOztBQUNoQ0MsWUFBUSxrQkFBWTtBQUNoQixlQUNJO0FBQUE7QUFBQTtBQUNJLCtEQURKO0FBRUk7QUFGSixTQURKO0FBTUg7QUFSK0IsQ0FBbEIsQ0FBbEI7O0FBV0EsbUJBQVNBLE1BQVQsQ0FDSSw4QkFBQyxXQUFELE9BREosRUFFSUMsU0FBU0MsY0FBVCxDQUF3QixpQkFBeEIsQ0FGSiIsImZpbGUiOiJhcHAuanMiLCJzb3VyY2VzQ29udGVudCI6WyJpbXBvcnQgUmVhY3QgZnJvbSAncmVhY3QnO1xuaW1wb3J0IFJlYWN0RE9NIGZyb20gJ3JlYWN0LWRvbSc7XG5cbmltcG9ydCB7TmF2QmFyfSBmcm9tICcuL25hdmJhci5qcyc7XG5pbXBvcnQge01haW5EaXZ9IGZyb20gJy4vbWFpbmRpdi5qcyc7XG5cblxudmFyIENoYXRTdXpldHRlID0gUmVhY3QuY3JlYXRlQ2xhc3Moe1xuICAgIHJlbmRlcjogZnVuY3Rpb24gKCkge1xuICAgICAgICByZXR1cm4oXG4gICAgICAgICAgICA8ZGl2PlxuICAgICAgICAgICAgICAgIDxOYXZCYXIvPlxuICAgICAgICAgICAgICAgIDxNYWluRGl2Lz5cbiAgICAgICAgICAgIDwvZGl2PlxuICAgICAgICApXG4gICAgfVxufSk7XG5cblJlYWN0RE9NLnJlbmRlcihcbiAgICA8Q2hhdFN1emV0dGUgLz4sXG4gICAgZG9jdW1lbnQuZ2V0RWxlbWVudEJ5SWQoJ3JlYWN0LWNvbnRhaW5lcicpXG4pO1xuXG4iXX0="
+    }
+  ],
+  "/Users/nipunkanade/development/chat-app/chat-su-zette/source/chatmessage.js": [
+    "'use strict';\n\nObject.defineProperty(exports, \"__esModule\", {\n    value: true\n});\nexports.ChatMessage = undefined;\n\nvar _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if (\"value\" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();\n\nvar _react = require('react');\n\nvar _react2 = _interopRequireDefault(_react);\n\nvar _reactGravatar = require('react-gravatar');\n\nvar _reactGravatar2 = _interopRequireDefault(_reactGravatar);\n\nfunction _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }\n\nfunction _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError(\"Cannot call a class as a function\"); } }\n\nfunction _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError(\"this hasn't been initialised - super() hasn't been called\"); } return call && (typeof call === \"object\" || typeof call === \"function\") ? call : self; }\n\nfunction _inherits(subClass, superClass) { if (typeof superClass !== \"function\" && superClass !== null) { throw new TypeError(\"Super expression must either be null or a function, not \" + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }\n\nvar config = require('./config.json');\n\nvar ChatMessage = exports.ChatMessage = function (_React$Component) {\n    _inherits(ChatMessage, _React$Component);\n\n    function ChatMessage() {\n        _classCallCheck(this, ChatMessage);\n\n        return _possibleConstructorReturn(this, (ChatMessage.__proto__ || Object.getPrototypeOf(ChatMessage)).apply(this, arguments));\n    }\n\n    _createClass(ChatMessage, [{\n        key: 'render',\n        value: function render() {\n            return _react2.default.createElement(\n                'li',\n                { className: 'media' },\n                _react2.default.createElement(\n                    'div',\n                    { className: 'media-body' },\n                    _react2.default.createElement(\n                        'div',\n                        { className: 'media' },\n                        _react2.default.createElement(\n                            'a',\n                            { id: 'avatar', className: 'pull-left', href: '#' },\n                            _react2.default.createElement(_reactGravatar2.default, { email: config.email })\n                        ),\n                        _react2.default.createElement(\n                            'div',\n                            { className: 'media-body' },\n                            'Donec sit amet ligula enim. Duis vel condimentum massa. Donec sit amet ligula enim. Duis vel condimentum massa.Donec sit amet ligula enim. Duis vel condimentum massa. Donec sit amet ligula enim. Duis vel condimentum massa.',\n                            _react2.default.createElement('br', null),\n                            _react2.default.createElement(\n                                'small',\n                                { className: 'text-muted' },\n                                'Alex Deo | 23rd June at 5:00pm'\n                            ),\n                            _react2.default.createElement('hr', null)\n                        )\n                    )\n                )\n            );\n        }\n    }]);\n\n    return ChatMessage;\n}(_react2.default.Component);\n",
+    {
+      "./config.json": "/Users/nipunkanade/development/chat-app/chat-su-zette/source/config.json",
+      "react": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react/react.js",
+      "react-gravatar": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-gravatar/dist/index.js"
+    },
+    {
+      "id": "/Users/nipunkanade/development/chat-app/chat-su-zette/source/chatmessage.js",
+      "hash": "JqkCCw",
+      "browserifyId": 195,
+      "sourcemap": "//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbImNoYXRtZXNzYWdlLmpzP3ZlcnNpb249SnFrQ0N3Il0sIm5hbWVzIjpbImNvbmZpZyIsInJlcXVpcmUiLCJDaGF0TWVzc2FnZSIsImVtYWlsIiwiQ29tcG9uZW50Il0sIm1hcHBpbmdzIjoiOzs7Ozs7Ozs7O0FBQUE7Ozs7QUFDQTs7Ozs7Ozs7Ozs7O0FBRUEsSUFBSUEsU0FBU0MsUUFBUSxlQUFSLENBQWI7O0lBRWFDLHNCQUFBQTs7Ozs7Ozs7Ozs7aUNBRUQ7QUFDSixtQkFHUTtBQUFBO0FBQUEsa0JBQUksV0FBVSxPQUFkO0FBQ0k7QUFBQTtBQUFBLHNCQUFLLFdBQVUsWUFBZjtBQUNJO0FBQUE7QUFBQSwwQkFBSyxXQUFVLE9BQWY7QUFDSTtBQUFBO0FBQUEsOEJBQUcsSUFBRyxRQUFOLEVBQWUsV0FBVSxXQUF6QixFQUFxQyxNQUFLLEdBQTFDO0FBQ1EscUZBQVUsT0FBT0YsT0FBT0csS0FBeEI7QUFEUix5QkFESjtBQUlJO0FBQUE7QUFBQSw4QkFBSyxXQUFVLFlBQWY7QUFBQTtBQU1JLHFFQU5KO0FBT0k7QUFBQTtBQUFBLGtDQUFPLFdBQVUsWUFBakI7QUFBQTtBQUFBLDZCQVBKO0FBUUk7QUFSSjtBQUpKO0FBREo7QUFESixhQUhSO0FBeUJIOzs7O0VBNUI0QixnQkFBTUMiLCJmaWxlIjoiY2hhdG1lc3NhZ2UuanMiLCJzb3VyY2VzQ29udGVudCI6WyJpbXBvcnQgUmVhY3QgZnJvbSAncmVhY3QnO1xuaW1wb3J0IEdyYXZhdGFyIGZyb20gJ3JlYWN0LWdyYXZhdGFyJztcblxudmFyIGNvbmZpZyA9IHJlcXVpcmUoJy4vY29uZmlnLmpzb24nKTtcblxuZXhwb3J0IGNsYXNzIENoYXRNZXNzYWdlIGV4dGVuZHMgUmVhY3QuQ29tcG9uZW50e1xuXG4gICAgcmVuZGVyKCl7XG4gICAgICAgIHJldHVybihcblxuXG4gICAgICAgICAgICAgICAgPGxpIGNsYXNzTmFtZT1cIm1lZGlhXCI+XG4gICAgICAgICAgICAgICAgICAgIDxkaXYgY2xhc3NOYW1lPVwibWVkaWEtYm9keVwiPlxuICAgICAgICAgICAgICAgICAgICAgICAgPGRpdiBjbGFzc05hbWU9XCJtZWRpYVwiPlxuICAgICAgICAgICAgICAgICAgICAgICAgICAgIDxhIGlkPVwiYXZhdGFyXCIgY2xhc3NOYW1lPVwicHVsbC1sZWZ0XCIgaHJlZj1cIiNcIj5cbiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIDxHcmF2YXRhciBlbWFpbD17Y29uZmlnLmVtYWlsfSAvPlxuICAgICAgICAgICAgICAgICAgICAgICAgICAgIDwvYT5cbiAgICAgICAgICAgICAgICAgICAgICAgICAgICA8ZGl2IGNsYXNzTmFtZT1cIm1lZGlhLWJvZHlcIj5cbiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgRG9uZWMgc2l0IGFtZXQgbGlndWxhIGVuaW0uIER1aXMgdmVsIGNvbmRpbWVudHVtIG1hc3NhLlxuICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBEb25lYyBzaXQgYW1ldCBsaWd1bGEgZW5pbS4gRHVpcyB2ZWwgY29uZGltZW50dW0gbWFzc2EuRG9uZWMgc2l0IGFtZXQgbGlndWxhXG4gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIGVuaW0uXG4gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIER1aXMgdmVsIGNvbmRpbWVudHVtIG1hc3NhLlxuICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBEb25lYyBzaXQgYW1ldCBsaWd1bGEgZW5pbS4gRHVpcyB2ZWwgY29uZGltZW50dW0gbWFzc2EuXG4gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIDxici8+XG4gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIDxzbWFsbCBjbGFzc05hbWU9XCJ0ZXh0LW11dGVkXCI+QWxleCBEZW8gfCAyM3JkIEp1bmUgYXQgNTowMHBtPC9zbWFsbD5cbiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgPGhyLz5cbiAgICAgICAgICAgICAgICAgICAgICAgICAgICA8L2Rpdj5cbiAgICAgICAgICAgICAgICAgICAgICAgIDwvZGl2PlxuICAgICAgICAgICAgICAgICAgICA8L2Rpdj5cbiAgICAgICAgICAgICAgICA8L2xpPlxuXG5cbiAgICAgICAgKVxuICAgIH1cbn0iXX0="
+    }
+  ],
+  "/Users/nipunkanade/development/chat-app/chat-su-zette/source/config.json": [
+    "module.exports={\n  \"name\": \"kanadenipun\",\n  \"fullName\": \"Nipun Kanade\",\n  \"email\": \"kanadenipun@gmail.com\"\n}",
+    {},
+    {
+      "id": "/Users/nipunkanade/development/chat-app/chat-su-zette/source/config.json",
+      "hash": "7PPN1A",
+      "browserifyId": 196,
+      "sourcemap": ""
+    }
+  ],
+  "/Users/nipunkanade/development/chat-app/chat-su-zette/source/currentchat.js": [
+    "'use strict';\n\nObject.defineProperty(exports, \"__esModule\", {\n    value: true\n});\nexports.CurrentChat = undefined;\n\nvar _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if (\"value\" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();\n\nvar _react = require('react');\n\nvar _react2 = _interopRequireDefault(_react);\n\nvar _chatmessage = require('./chatmessage.js');\n\nfunction _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }\n\nfunction _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError(\"Cannot call a class as a function\"); } }\n\nfunction _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError(\"this hasn't been initialised - super() hasn't been called\"); } return call && (typeof call === \"object\" || typeof call === \"function\") ? call : self; }\n\nfunction _inherits(subClass, superClass) { if (typeof superClass !== \"function\" && superClass !== null) { throw new TypeError(\"Super expression must either be null or a function, not \" + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }\n\nvar CurrentChat = exports.CurrentChat = function (_React$Component) {\n    _inherits(CurrentChat, _React$Component);\n\n    function CurrentChat() {\n        _classCallCheck(this, CurrentChat);\n\n        return _possibleConstructorReturn(this, (CurrentChat.__proto__ || Object.getPrototypeOf(CurrentChat)).apply(this, arguments));\n    }\n\n    _createClass(CurrentChat, [{\n        key: 'render',\n        value: function render() {\n            return _react2.default.createElement(\n                'div',\n                null,\n                _react2.default.createElement(\n                    'div',\n                    { className: 'row current-chat-area' },\n                    _react2.default.createElement(\n                        'div',\n                        { className: 'col-md-12' },\n                        _react2.default.createElement(\n                            'ul',\n                            { className: 'media-list' },\n                            _react2.default.createElement(_chatmessage.ChatMessage, null),\n                            _react2.default.createElement(_chatmessage.ChatMessage, null),\n                            _react2.default.createElement(_chatmessage.ChatMessage, null),\n                            _react2.default.createElement(_chatmessage.ChatMessage, null),\n                            _react2.default.createElement(_chatmessage.ChatMessage, null),\n                            _react2.default.createElement(_chatmessage.ChatMessage, null)\n                        )\n                    )\n                )\n            );\n        }\n    }]);\n\n    return CurrentChat;\n}(_react2.default.Component);\n",
+    {
+      "react": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react/react.js",
+      "./chatmessage.js": "/Users/nipunkanade/development/chat-app/chat-su-zette/source/chatmessage.js"
+    },
+    {
+      "id": "/Users/nipunkanade/development/chat-app/chat-su-zette/source/currentchat.js",
+      "hash": "HMfANQ",
+      "browserifyId": 197,
+      "sourcemap": "//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbImN1cnJlbnRjaGF0LmpzP3ZlcnNpb249SE1mQU5RIl0sIm5hbWVzIjpbIkN1cnJlbnRDaGF0IiwiQ29tcG9uZW50Il0sIm1hcHBpbmdzIjoiOzs7Ozs7Ozs7O0FBQUE7Ozs7QUFFQTs7Ozs7Ozs7OztJQUVhQSxzQkFBQUE7Ozs7Ozs7Ozs7O2lDQUNBO0FBQ0wsbUJBQ0k7QUFBQTtBQUFBO0FBQ0k7QUFBQTtBQUFBLHNCQUFLLFdBQVUsdUJBQWY7QUFDSTtBQUFBO0FBQUEsMEJBQUssV0FBVSxXQUFmO0FBQ0k7QUFBQTtBQUFBLDhCQUFJLFdBQVUsWUFBZDtBQUNJLHlGQURKO0FBRUkseUZBRko7QUFHSSx5RkFISjtBQUlJLHlGQUpKO0FBS0kseUZBTEo7QUFNSTtBQU5KO0FBREo7QUFESjtBQURKLGFBREo7QUFvQkg7Ozs7RUF0QjRCLGdCQUFNQyIsImZpbGUiOiJjdXJyZW50Y2hhdC5qcyIsInNvdXJjZXNDb250ZW50IjpbImltcG9ydCBSZWFjdCBmcm9tICdyZWFjdCc7XG5cbmltcG9ydCB7Q2hhdE1lc3NhZ2V9IGZyb20gJy4vY2hhdG1lc3NhZ2UuanMnO1xuXG5leHBvcnQgY2xhc3MgQ3VycmVudENoYXQgZXh0ZW5kcyBSZWFjdC5Db21wb25lbnR7XG4gICAgcmVuZGVyKCkge1xuICAgICAgICByZXR1cm4gKFxuICAgICAgICAgICAgPGRpdj5cbiAgICAgICAgICAgICAgICA8ZGl2IGNsYXNzTmFtZT1cInJvdyBjdXJyZW50LWNoYXQtYXJlYVwiPlxuICAgICAgICAgICAgICAgICAgICA8ZGl2IGNsYXNzTmFtZT1cImNvbC1tZC0xMlwiPlxuICAgICAgICAgICAgICAgICAgICAgICAgPHVsIGNsYXNzTmFtZT1cIm1lZGlhLWxpc3RcIj5cbiAgICAgICAgICAgICAgICAgICAgICAgICAgICA8Q2hhdE1lc3NhZ2UvPlxuICAgICAgICAgICAgICAgICAgICAgICAgICAgIDxDaGF0TWVzc2FnZS8+XG4gICAgICAgICAgICAgICAgICAgICAgICAgICAgPENoYXRNZXNzYWdlLz5cbiAgICAgICAgICAgICAgICAgICAgICAgICAgICA8Q2hhdE1lc3NhZ2UvPlxuICAgICAgICAgICAgICAgICAgICAgICAgICAgIDxDaGF0TWVzc2FnZS8+XG4gICAgICAgICAgICAgICAgICAgICAgICAgICAgPENoYXRNZXNzYWdlLz5cbiAgICAgICAgICAgICAgICAgICAgICAgIDwvdWw+XG4gICAgICAgICAgICAgICAgICAgIDwvZGl2PlxuICAgICAgICAgICAgICAgIDwvZGl2PlxuXG5cblxuICAgICAgICAgICAgPC9kaXY+XG5cbiAgICAgICAgKTtcbiAgICB9XG59Il19"
+    }
+  ],
+  "/Users/nipunkanade/development/chat-app/chat-su-zette/source/maindiv.js": [
+    "'use strict';\n\nObject.defineProperty(exports, \"__esModule\", {\n    value: true\n});\nexports.MainDiv = undefined;\n\nvar _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if (\"value\" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();\n\nvar _react = require('react');\n\nvar _react2 = _interopRequireDefault(_react);\n\nvar _currentchat = require('./currentchat');\n\nvar _sidenav = require('./sidenav');\n\nvar _typebox = require('./typebox');\n\nfunction _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }\n\nfunction _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError(\"Cannot call a class as a function\"); } }\n\nfunction _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError(\"this hasn't been initialised - super() hasn't been called\"); } return call && (typeof call === \"object\" || typeof call === \"function\") ? call : self; }\n\nfunction _inherits(subClass, superClass) { if (typeof superClass !== \"function\" && superClass !== null) { throw new TypeError(\"Super expression must either be null or a function, not \" + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }\n\nvar MainDiv = exports.MainDiv = function (_React$Component) {\n    _inherits(MainDiv, _React$Component);\n\n    function MainDiv() {\n        _classCallCheck(this, MainDiv);\n\n        return _possibleConstructorReturn(this, (MainDiv.__proto__ || Object.getPrototypeOf(MainDiv)).apply(this, arguments));\n    }\n\n    _createClass(MainDiv, [{\n        key: 'render',\n        value: function render() {\n            return _react2.default.createElement(\n                'div',\n                { className: 'main-div' },\n                _react2.default.createElement(\n                    'div',\n                    { className: 'container' },\n                    _react2.default.createElement(\n                        'div',\n                        { className: 'row' },\n                        _react2.default.createElement(\n                            'div',\n                            { className: 'col-4 navarea' },\n                            _react2.default.createElement(_sidenav.SideNav, null)\n                        ),\n                        _react2.default.createElement(\n                            'div',\n                            { className: 'col-8' },\n                            _react2.default.createElement(_currentchat.CurrentChat, null),\n                            _react2.default.createElement(_typebox.TypeBox, null)\n                        )\n                    )\n                )\n            );\n        }\n    }]);\n\n    return MainDiv;\n}(_react2.default.Component);\n",
+    {
+      "react": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react/react.js",
+      "./sidenav": "/Users/nipunkanade/development/chat-app/chat-su-zette/source/sidenav.js",
+      "./currentchat": "/Users/nipunkanade/development/chat-app/chat-su-zette/source/currentchat.js",
+      "./typebox": "/Users/nipunkanade/development/chat-app/chat-su-zette/source/typebox.js"
+    },
+    {
+      "id": "/Users/nipunkanade/development/chat-app/chat-su-zette/source/maindiv.js",
+      "hash": "hEAtcg",
+      "browserifyId": 198,
+      "sourcemap": "//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIm1haW5kaXYuanM/dmVyc2lvbj1oRUF0Y2ciXSwibmFtZXMiOlsiTWFpbkRpdiIsIkNvbXBvbmVudCJdLCJtYXBwaW5ncyI6Ijs7Ozs7Ozs7OztBQUFBOzs7O0FBRUE7O0FBQ0E7O0FBQ0E7Ozs7Ozs7Ozs7SUFFYUEsa0JBQUFBOzs7Ozs7Ozs7OztpQ0FDQTtBQUNMLG1CQUNJO0FBQUE7QUFBQSxrQkFBSyxXQUFVLFVBQWY7QUFDSTtBQUFBO0FBQUEsc0JBQUssV0FBVSxXQUFmO0FBQ0k7QUFBQTtBQUFBLDBCQUFLLFdBQVUsS0FBZjtBQUVJO0FBQUE7QUFBQSw4QkFBSyxXQUFVLGVBQWY7QUFDSTtBQURKLHlCQUZKO0FBTUk7QUFBQTtBQUFBLDhCQUFLLFdBQVUsT0FBZjtBQUNJLHlGQURKO0FBRUk7QUFGSjtBQU5KO0FBREo7QUFESixhQURKO0FBa0JIOzs7O0VBcEJ3QixnQkFBTUMiLCJmaWxlIjoibWFpbmRpdi5qcyIsInNvdXJjZXNDb250ZW50IjpbImltcG9ydCBSZWFjdCBmcm9tICdyZWFjdCc7XG5cbmltcG9ydCB7Q3VycmVudENoYXR9IGZyb20gJy4vY3VycmVudGNoYXQnO1xuaW1wb3J0IHtTaWRlTmF2fSBmcm9tICcuL3NpZGVuYXYnO1xuaW1wb3J0IHtUeXBlQm94fSBmcm9tICcuL3R5cGVib3gnO1xuXG5leHBvcnQgY2xhc3MgTWFpbkRpdiBleHRlbmRzIFJlYWN0LkNvbXBvbmVudHtcbiAgICByZW5kZXIoKSB7XG4gICAgICAgIHJldHVybiAoXG4gICAgICAgICAgICA8ZGl2IGNsYXNzTmFtZT1cIm1haW4tZGl2XCI+XG4gICAgICAgICAgICAgICAgPGRpdiBjbGFzc05hbWU9XCJjb250YWluZXJcIj5cbiAgICAgICAgICAgICAgICAgICAgPGRpdiBjbGFzc05hbWU9XCJyb3dcIj5cblxuICAgICAgICAgICAgICAgICAgICAgICAgPGRpdiBjbGFzc05hbWU9XCJjb2wtNCBuYXZhcmVhXCI+XG4gICAgICAgICAgICAgICAgICAgICAgICAgICAgPFNpZGVOYXYgLz5cbiAgICAgICAgICAgICAgICAgICAgICAgIDwvZGl2PlxuXG4gICAgICAgICAgICAgICAgICAgICAgICA8ZGl2IGNsYXNzTmFtZT1cImNvbC04XCI+XG4gICAgICAgICAgICAgICAgICAgICAgICAgICAgPEN1cnJlbnRDaGF0IC8+XG4gICAgICAgICAgICAgICAgICAgICAgICAgICAgPFR5cGVCb3ggLz5cbiAgICAgICAgICAgICAgICAgICAgICAgIDwvZGl2PlxuXG4gICAgICAgICAgICAgICAgICAgIDwvZGl2PlxuICAgICAgICAgICAgICAgIDwvZGl2PlxuICAgICAgICAgICAgPC9kaXY+XG4gICAgICAgIClcbiAgICB9XG59XG4iXX0="
+    }
+  ],
+  "/Users/nipunkanade/development/chat-app/chat-su-zette/source/navbar.js": [
+    "'use strict';\n\nObject.defineProperty(exports, \"__esModule\", {\n    value: true\n});\nexports.NavBar = undefined;\n\nvar _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if (\"value\" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();\n\nvar _react = require('react');\n\nvar _react2 = _interopRequireDefault(_react);\n\nvar _reactGravatar = require('react-gravatar');\n\nvar _reactGravatar2 = _interopRequireDefault(_reactGravatar);\n\nfunction _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }\n\nfunction _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError(\"Cannot call a class as a function\"); } }\n\nfunction _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError(\"this hasn't been initialised - super() hasn't been called\"); } return call && (typeof call === \"object\" || typeof call === \"function\") ? call : self; }\n\nfunction _inherits(subClass, superClass) { if (typeof superClass !== \"function\" && superClass !== null) { throw new TypeError(\"Super expression must either be null or a function, not \" + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }\n\nvar config = require('./config.json');\n\nvar NavBar = exports.NavBar = function (_React$Component) {\n    _inherits(NavBar, _React$Component);\n\n    function NavBar() {\n        _classCallCheck(this, NavBar);\n\n        return _possibleConstructorReturn(this, (NavBar.__proto__ || Object.getPrototypeOf(NavBar)).apply(this, arguments));\n    }\n\n    _createClass(NavBar, [{\n        key: 'render',\n        value: function render() {\n            return _react2.default.createElement(\n                'div',\n                null,\n                _react2.default.createElement(\n                    'div',\n                    { className: 'collapse bg-dark', id: 'navbarHeader' },\n                    _react2.default.createElement(\n                        'div',\n                        { className: 'container' },\n                        _react2.default.createElement(\n                            'div',\n                            { className: 'row' },\n                            _react2.default.createElement(\n                                'div',\n                                { className: 'col-sm-8 py-4' },\n                                _react2.default.createElement(\n                                    'h4',\n                                    { className: 'text-white' },\n                                    'About'\n                                ),\n                                _react2.default.createElement(\n                                    'p',\n                                    { className: 'text-muted' },\n                                    'Add some information about the album below, the author, or any other background context. Make it a few sentences long so folks can pick up some informative tidbits. Then, link them off to some social networking sites or contact information.'\n                                )\n                            ),\n                            _react2.default.createElement(\n                                'div',\n                                { className: 'col-sm-4 py-4' },\n                                _react2.default.createElement(\n                                    'h4',\n                                    { className: 'text-white' },\n                                    'Contact'\n                                ),\n                                _react2.default.createElement(\n                                    'ul',\n                                    { className: 'list-unstyled' },\n                                    _react2.default.createElement(\n                                        'li',\n                                        null,\n                                        _react2.default.createElement(\n                                            'a',\n                                            { href: '#', className: 'text-white' },\n                                            'Follow on Twitter'\n                                        )\n                                    ),\n                                    _react2.default.createElement(\n                                        'li',\n                                        null,\n                                        _react2.default.createElement(\n                                            'a',\n                                            { href: '#', className: 'text-white' },\n                                            'Like on Facebook'\n                                        )\n                                    ),\n                                    _react2.default.createElement(\n                                        'li',\n                                        null,\n                                        _react2.default.createElement(\n                                            'a',\n                                            { href: '#', className: 'text-white' },\n                                            'Email me'\n                                        )\n                                    )\n                                )\n                            )\n                        )\n                    )\n                ),\n                _react2.default.createElement(\n                    'div',\n                    { className: 'navbar navbar-dark bg-dark' },\n                    _react2.default.createElement(\n                        'div',\n                        { className: 'container d-flex justify-content-between' },\n                        _react2.default.createElement(\n                            'a',\n                            { href: '#', className: 'navbar-brand' },\n                            _react2.default.createElement(\n                                'h3',\n                                { style: { fontFamily: 'Grand Hotel' } },\n                                'Chat Suzette'\n                            )\n                        ),\n                        _react2.default.createElement(\n                            'button',\n                            { className: 'navbar-toggler', type: 'button', 'data-toggle': 'collapse', 'data-target': '#navbarHeader', 'aria-controls': 'navbarHeader', 'aria-expanded': 'false', 'aria-label': 'Toggle navigation' },\n                            _react2.default.createElement(\n                                'div',\n                                { id: 'avatar' },\n                                _react2.default.createElement(_reactGravatar2.default, { email: config.email, size: 30 })\n                            )\n                        )\n                    )\n                )\n            );\n        }\n    }]);\n\n    return NavBar;\n}(_react2.default.Component);\n",
+    {
+      "./config.json": "/Users/nipunkanade/development/chat-app/chat-su-zette/source/config.json",
+      "react": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react/react.js",
+      "react-gravatar": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react-gravatar/dist/index.js"
+    },
+    {
+      "id": "/Users/nipunkanade/development/chat-app/chat-su-zette/source/navbar.js",
+      "hash": "Fe1NXQ",
+      "browserifyId": 199,
+      "sourcemap": "//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIm5hdmJhci5qcz92ZXJzaW9uPUZlMU5YUSJdLCJuYW1lcyI6WyJjb25maWciLCJyZXF1aXJlIiwiTmF2QmFyIiwiZm9udEZhbWlseSIsImVtYWlsIiwiQ29tcG9uZW50Il0sIm1hcHBpbmdzIjoiOzs7Ozs7Ozs7O0FBQUE7Ozs7QUFDQTs7Ozs7Ozs7Ozs7O0FBRUEsSUFBSUEsU0FBU0MsUUFBUSxlQUFSLENBQWI7O0lBRWFDLGlCQUFBQTs7Ozs7Ozs7Ozs7aUNBQ0M7QUFDRixtQkFDSTtBQUFBO0FBQUE7QUFHSTtBQUFBO0FBQUEsc0JBQUssV0FBVSxrQkFBZixFQUFrQyxJQUFHLGNBQXJDO0FBQ0k7QUFBQTtBQUFBLDBCQUFLLFdBQVUsV0FBZjtBQUNJO0FBQUE7QUFBQSw4QkFBSyxXQUFVLEtBQWY7QUFDSTtBQUFBO0FBQUEsa0NBQUssV0FBVSxlQUFmO0FBQ0k7QUFBQTtBQUFBLHNDQUFJLFdBQVUsWUFBZDtBQUFBO0FBQUEsaUNBREo7QUFFSTtBQUFBO0FBQUEsc0NBQUcsV0FBVSxZQUFiO0FBQUE7QUFBQTtBQUZKLDZCQURKO0FBS0k7QUFBQTtBQUFBLGtDQUFLLFdBQVUsZUFBZjtBQUNJO0FBQUE7QUFBQSxzQ0FBSSxXQUFVLFlBQWQ7QUFBQTtBQUFBLGlDQURKO0FBRUk7QUFBQTtBQUFBLHNDQUFJLFdBQVUsZUFBZDtBQUNJO0FBQUE7QUFBQTtBQUFJO0FBQUE7QUFBQSw4Q0FBRyxNQUFLLEdBQVIsRUFBWSxXQUFVLFlBQXRCO0FBQUE7QUFBQTtBQUFKLHFDQURKO0FBRUk7QUFBQTtBQUFBO0FBQUk7QUFBQTtBQUFBLDhDQUFHLE1BQUssR0FBUixFQUFZLFdBQVUsWUFBdEI7QUFBQTtBQUFBO0FBQUoscUNBRko7QUFHSTtBQUFBO0FBQUE7QUFBSTtBQUFBO0FBQUEsOENBQUcsTUFBSyxHQUFSLEVBQVksV0FBVSxZQUF0QjtBQUFBO0FBQUE7QUFBSjtBQUhKO0FBRko7QUFMSjtBQURKO0FBREosaUJBSEo7QUFxQkk7QUFBQTtBQUFBLHNCQUFLLFdBQVUsNEJBQWY7QUFDSTtBQUFBO0FBQUEsMEJBQUssV0FBVSwwQ0FBZjtBQUVJO0FBQUE7QUFBQSw4QkFBRyxNQUFLLEdBQVIsRUFBWSxXQUFVLGNBQXRCO0FBQXFDO0FBQUE7QUFBQSxrQ0FBSSxPQUFPLEVBQUVDLFlBQVksYUFBZCxFQUFYO0FBQUE7QUFBQTtBQUFyQyx5QkFGSjtBQUlJO0FBQUE7QUFBQSw4QkFBUSxXQUFVLGdCQUFsQixFQUFtQyxNQUFLLFFBQXhDLEVBQWlELGVBQVksVUFBN0QsRUFBd0UsZUFBWSxlQUFwRixFQUFvRyxpQkFBYyxjQUFsSCxFQUFpSSxpQkFBYyxPQUEvSSxFQUF1SixjQUFXLG1CQUFsSztBQUNJO0FBQUE7QUFBQSxrQ0FBSyxJQUFHLFFBQVI7QUFDSSx5RkFBVSxPQUFPSCxPQUFPSSxLQUF4QixFQUErQixNQUFNLEVBQXJDO0FBREo7QUFESjtBQUpKO0FBREo7QUFyQkosYUFESjtBQXdDUDs7OztFQTFDdUIsZ0JBQU1DIiwiZmlsZSI6Im5hdmJhci5qcyIsInNvdXJjZXNDb250ZW50IjpbImltcG9ydCBSZWFjdCBmcm9tICdyZWFjdCc7XG5pbXBvcnQgR3JhdmF0YXIgZnJvbSAncmVhY3QtZ3JhdmF0YXInO1xuXG52YXIgY29uZmlnID0gcmVxdWlyZSgnLi9jb25maWcuanNvbicpO1xuXG5leHBvcnQgY2xhc3MgTmF2QmFyIGV4dGVuZHMgUmVhY3QuQ29tcG9uZW50IHtcbiAgICByZW5kZXIgKCkge1xuICAgICAgICAgICAgcmV0dXJuKFxuICAgICAgICAgICAgICAgIDxkaXY+XG5cblxuICAgICAgICAgICAgICAgICAgICA8ZGl2IGNsYXNzTmFtZT1cImNvbGxhcHNlIGJnLWRhcmtcIiBpZD1cIm5hdmJhckhlYWRlclwiPlxuICAgICAgICAgICAgICAgICAgICAgICAgPGRpdiBjbGFzc05hbWU9XCJjb250YWluZXJcIj5cbiAgICAgICAgICAgICAgICAgICAgICAgICAgICA8ZGl2IGNsYXNzTmFtZT1cInJvd1wiPlxuICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA8ZGl2IGNsYXNzTmFtZT1cImNvbC1zbS04IHB5LTRcIj5cbiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIDxoNCBjbGFzc05hbWU9XCJ0ZXh0LXdoaXRlXCI+QWJvdXQ8L2g0PlxuICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgPHAgY2xhc3NOYW1lPVwidGV4dC1tdXRlZFwiPkFkZCBzb21lIGluZm9ybWF0aW9uIGFib3V0IHRoZSBhbGJ1bSBiZWxvdywgdGhlIGF1dGhvciwgb3IgYW55IG90aGVyIGJhY2tncm91bmQgY29udGV4dC4gTWFrZSBpdCBhIGZldyBzZW50ZW5jZXMgbG9uZyBzbyBmb2xrcyBjYW4gcGljayB1cCBzb21lIGluZm9ybWF0aXZlIHRpZGJpdHMuIFRoZW4sIGxpbmsgdGhlbSBvZmYgdG8gc29tZSBzb2NpYWwgbmV0d29ya2luZyBzaXRlcyBvciBjb250YWN0IGluZm9ybWF0aW9uLjwvcD5cbiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgPC9kaXY+XG4gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIDxkaXYgY2xhc3NOYW1lPVwiY29sLXNtLTQgcHktNFwiPlxuICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgPGg0IGNsYXNzTmFtZT1cInRleHQtd2hpdGVcIj5Db250YWN0PC9oND5cbiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIDx1bCBjbGFzc05hbWU9XCJsaXN0LXVuc3R5bGVkXCI+XG4gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgPGxpPjxhIGhyZWY9XCIjXCIgY2xhc3NOYW1lPVwidGV4dC13aGl0ZVwiPkZvbGxvdyBvbiBUd2l0dGVyPC9hPjwvbGk+XG4gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgPGxpPjxhIGhyZWY9XCIjXCIgY2xhc3NOYW1lPVwidGV4dC13aGl0ZVwiPkxpa2Ugb24gRmFjZWJvb2s8L2E+PC9saT5cbiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA8bGk+PGEgaHJlZj1cIiNcIiBjbGFzc05hbWU9XCJ0ZXh0LXdoaXRlXCI+RW1haWwgbWU8L2E+PC9saT5cbiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIDwvdWw+XG4gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIDwvZGl2PlxuICAgICAgICAgICAgICAgICAgICAgICAgICAgIDwvZGl2PlxuICAgICAgICAgICAgICAgICAgICAgICAgPC9kaXY+XG4gICAgICAgICAgICAgICAgICAgIDwvZGl2PlxuICAgICAgICAgICAgICAgICAgICA8ZGl2IGNsYXNzTmFtZT1cIm5hdmJhciBuYXZiYXItZGFyayBiZy1kYXJrXCI+XG4gICAgICAgICAgICAgICAgICAgICAgICA8ZGl2IGNsYXNzTmFtZT1cImNvbnRhaW5lciBkLWZsZXgganVzdGlmeS1jb250ZW50LWJldHdlZW5cIj5cblxuICAgICAgICAgICAgICAgICAgICAgICAgICAgIDxhIGhyZWY9XCIjXCIgY2xhc3NOYW1lPVwibmF2YmFyLWJyYW5kXCI+PGgzIHN0eWxlPXt7IGZvbnRGYW1pbHk6ICdHcmFuZCBIb3RlbCd9fT5DaGF0IFN1emV0dGU8L2gzPjwvYT5cblxuICAgICAgICAgICAgICAgICAgICAgICAgICAgIDxidXR0b24gY2xhc3NOYW1lPVwibmF2YmFyLXRvZ2dsZXJcIiB0eXBlPVwiYnV0dG9uXCIgZGF0YS10b2dnbGU9XCJjb2xsYXBzZVwiIGRhdGEtdGFyZ2V0PVwiI25hdmJhckhlYWRlclwiIGFyaWEtY29udHJvbHM9XCJuYXZiYXJIZWFkZXJcIiBhcmlhLWV4cGFuZGVkPVwiZmFsc2VcIiBhcmlhLWxhYmVsPVwiVG9nZ2xlIG5hdmlnYXRpb25cIj5cbiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgPGRpdiBpZD1cImF2YXRhclwiPlxuICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgPEdyYXZhdGFyIGVtYWlsPXtjb25maWcuZW1haWx9IHNpemU9ezMwfSAvPlxuICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA8L2Rpdj5cbiAgICAgICAgICAgICAgICAgICAgICAgICAgICA8L2J1dHRvbj5cbiAgICAgICAgICAgICAgICAgICAgICAgIDwvZGl2PlxuICAgICAgICAgICAgICAgICAgICA8L2Rpdj5cblxuXG5cblxuICAgICAgICAgICAgICAgIDwvZGl2PlxuICAgICAgICAgICAgKTtcbiAgICB9XG59Il19"
+    }
+  ],
+  "/Users/nipunkanade/development/chat-app/chat-su-zette/source/sidenav.js": [
+    "'use strict';\n\nObject.defineProperty(exports, \"__esModule\", {\n    value: true\n});\nexports.SideNav = undefined;\n\nvar _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if (\"value\" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();\n\nvar _react = require('react');\n\nvar _react2 = _interopRequireDefault(_react);\n\nfunction _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }\n\nfunction _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError(\"Cannot call a class as a function\"); } }\n\nfunction _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError(\"this hasn't been initialised - super() hasn't been called\"); } return call && (typeof call === \"object\" || typeof call === \"function\") ? call : self; }\n\nfunction _inherits(subClass, superClass) { if (typeof superClass !== \"function\" && superClass !== null) { throw new TypeError(\"Super expression must either be null or a function, not \" + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }\n\nvar SideNav = exports.SideNav = function (_React$Component) {\n    _inherits(SideNav, _React$Component);\n\n    function SideNav() {\n        _classCallCheck(this, SideNav);\n\n        return _possibleConstructorReturn(this, (SideNav.__proto__ || Object.getPrototypeOf(SideNav)).apply(this, arguments));\n    }\n\n    _createClass(SideNav, [{\n        key: 'render',\n        value: function render() {\n            return _react2.default.createElement(\n                'h1',\n                null,\n                'Hello Nipun'\n            );\n        }\n    }]);\n\n    return SideNav;\n}(_react2.default.Component);\n",
+    {
+      "react": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react/react.js"
+    },
+    {
+      "id": "/Users/nipunkanade/development/chat-app/chat-su-zette/source/sidenav.js",
+      "hash": "51Fllw",
+      "browserifyId": 200,
+      "sourcemap": "//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbInNpZGVuYXYuanM/dmVyc2lvbj01MUZsbHciXSwibmFtZXMiOlsiU2lkZU5hdiIsIkNvbXBvbmVudCJdLCJtYXBwaW5ncyI6Ijs7Ozs7Ozs7OztBQUFBOzs7Ozs7Ozs7Ozs7SUFFYUEsa0JBQUFBOzs7Ozs7Ozs7OztpQ0FDQTtBQUNMLG1CQUNJO0FBQUE7QUFBQTtBQUFBO0FBQUEsYUFESjtBQUdIOzs7O0VBTHdCLGdCQUFNQyIsImZpbGUiOiJzaWRlbmF2LmpzIiwic291cmNlc0NvbnRlbnQiOlsiaW1wb3J0IFJlYWN0IGZyb20gJ3JlYWN0JztcblxuZXhwb3J0IGNsYXNzIFNpZGVOYXYgZXh0ZW5kcyBSZWFjdC5Db21wb25lbnR7XG4gICAgcmVuZGVyKCkge1xuICAgICAgICByZXR1cm4gKFxuICAgICAgICAgICAgPGgxPkhlbGxvIE5pcHVuPC9oMT5cbiAgICAgICAgKVxuICAgIH1cblxufVxuXG4iXX0="
+    }
+  ],
+  "/Users/nipunkanade/development/chat-app/chat-su-zette/source/typebox.js": [
+    "\"use strict\";\n\nObject.defineProperty(exports, \"__esModule\", {\n    value: true\n});\nexports.TypeBox = undefined;\n\nvar _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if (\"value\" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();\n\nvar _react = require(\"react\");\n\nvar _react2 = _interopRequireDefault(_react);\n\nfunction _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }\n\nfunction _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError(\"Cannot call a class as a function\"); } }\n\nfunction _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError(\"this hasn't been initialised - super() hasn't been called\"); } return call && (typeof call === \"object\" || typeof call === \"function\") ? call : self; }\n\nfunction _inherits(subClass, superClass) { if (typeof superClass !== \"function\" && superClass !== null) { throw new TypeError(\"Super expression must either be null or a function, not \" + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }\n\nvar TypeBox = exports.TypeBox = function (_React$Component) {\n    _inherits(TypeBox, _React$Component);\n\n    function TypeBox() {\n        _classCallCheck(this, TypeBox);\n\n        return _possibleConstructorReturn(this, (TypeBox.__proto__ || Object.getPrototypeOf(TypeBox)).apply(this, arguments));\n    }\n\n    _createClass(TypeBox, [{\n        key: \"render\",\n        value: function render() {\n            return _react2.default.createElement(\n                \"div\",\n                null,\n                _react2.default.createElement(\n                    \"div\",\n                    { className: \"row current-chat-footer\" },\n                    _react2.default.createElement(\n                        \"div\",\n                        { className: \"input-group\" },\n                        _react2.default.createElement(\"input\", { type: \"text\", className: \"form-control\", placeholder: \"Type your message...\" }),\n                        _react2.default.createElement(\n                            \"span\",\n                            { className: \"input-group-btn\" },\n                            _react2.default.createElement(\n                                \"button\",\n                                { className: \"btn btn-secondary\", type: \"button\" },\n                                \"Send\"\n                            )\n                        )\n                    )\n                )\n            );\n        }\n    }]);\n\n    return TypeBox;\n}(_react2.default.Component);\n",
+    {
+      "react": "/Users/nipunkanade/development/chat-app/chat-su-zette/node_modules/react/react.js"
+    },
+    {
+      "id": "/Users/nipunkanade/development/chat-app/chat-su-zette/source/typebox.js",
+      "hash": "1f8nvQ",
+      "browserifyId": 201,
+      "sourcemap": "//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbInR5cGVib3guanM/dmVyc2lvbj0xZjhudlEiXSwibmFtZXMiOlsiVHlwZUJveCIsIkNvbXBvbmVudCJdLCJtYXBwaW5ncyI6Ijs7Ozs7Ozs7OztBQUFBOzs7Ozs7Ozs7Ozs7SUFFYUEsa0JBQUFBOzs7Ozs7Ozs7OztpQ0FDQTtBQUNMLG1CQUNJO0FBQUE7QUFBQTtBQUNJO0FBQUE7QUFBQSxzQkFBSyxXQUFVLHlCQUFmO0FBQ0k7QUFBQTtBQUFBLDBCQUFLLFdBQVUsYUFBZjtBQUNJLGlFQUFPLE1BQUssTUFBWixFQUFtQixXQUFVLGNBQTdCLEVBQTRDLGFBQVksc0JBQXhELEdBREo7QUFFUTtBQUFBO0FBQUEsOEJBQU0sV0FBVSxpQkFBaEI7QUFDQTtBQUFBO0FBQUEsa0NBQVEsV0FBVSxtQkFBbEIsRUFBc0MsTUFBSyxRQUEzQztBQUFBO0FBQUE7QUFEQTtBQUZSO0FBREo7QUFESixhQURKO0FBWUg7Ozs7RUFkd0IsZ0JBQU1DIiwiZmlsZSI6InR5cGVib3guanMiLCJzb3VyY2VzQ29udGVudCI6WyJpbXBvcnQgUmVhY3QgZnJvbSAncmVhY3QnO1xuXG5leHBvcnQgY2xhc3MgVHlwZUJveCBleHRlbmRzIFJlYWN0LkNvbXBvbmVudHtcbiAgICByZW5kZXIoKSB7XG4gICAgICAgIHJldHVybiAoXG4gICAgICAgICAgICA8ZGl2PlxuICAgICAgICAgICAgICAgIDxkaXYgY2xhc3NOYW1lPVwicm93IGN1cnJlbnQtY2hhdC1mb290ZXJcIj5cbiAgICAgICAgICAgICAgICAgICAgPGRpdiBjbGFzc05hbWU9XCJpbnB1dC1ncm91cFwiPlxuICAgICAgICAgICAgICAgICAgICAgICAgPGlucHV0IHR5cGU9XCJ0ZXh0XCIgY2xhc3NOYW1lPVwiZm9ybS1jb250cm9sXCIgcGxhY2Vob2xkZXI9XCJUeXBlIHlvdXIgbWVzc2FnZS4uLlwiLz5cbiAgICAgICAgICAgICAgICAgICAgICAgICAgICA8c3BhbiBjbGFzc05hbWU9XCJpbnB1dC1ncm91cC1idG5cIj5cbiAgICAgICAgICAgICAgICAgICAgICAgICAgICA8YnV0dG9uIGNsYXNzTmFtZT1cImJ0biBidG4tc2Vjb25kYXJ5XCIgdHlwZT1cImJ1dHRvblwiPlNlbmQ8L2J1dHRvbj5cbiAgICAgICAgICAgICAgICAgICAgICAgICAgICA8L3NwYW4+XG4gICAgICAgICAgICAgICAgICAgIDwvZGl2PlxuICAgICAgICAgICAgICAgIDwvZGl2PlxuICAgICAgICAgICAgPC9kaXY+XG4gICAgICAgIClcbiAgICB9XG5cbn1cblxuIl19"
     }
   ]
 }, [

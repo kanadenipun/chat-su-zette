@@ -20,6 +20,9 @@
   },
   "homepage": "https://github.com/kanadenipun/chat-su-zette#readme",
   "dependencies": {
+    "bootstrap": "^4.0.0-beta",
+    "jquery": "^3.0.0",
+    "popper.js": "^1.12.5",
     "react": "^15.6.1",
     "react-dom": "^15.6.1"
   },

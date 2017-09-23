@@ -1,17 +1,23 @@
-var React = require('react');
-var ReactDOM = require('react-dom');
+import React from 'react';
+import ReactDOM from 'react-dom';
 
-var Hello = React.createClass({
+import {NavBar} from './navbar.js';
+import {MainDiv} from './maindiv.js';
+
+
+var ChatSuzette = React.createClass({
     render: function () {
-        let hello="hello";
-        console.log(hello);
-        hello="world";
-        console.log(hello);
-        return <div>Hello {this.props.name}</div>;
+        return(
+            <div>
+                <NavBar/>
+                <MainDiv/>
+            </div>
+        )
     }
 });
 
 ReactDOM.render(
-    <Hello name="World" />,
+    <ChatSuzette />,
     document.getElementById('react-container')
 );
+
